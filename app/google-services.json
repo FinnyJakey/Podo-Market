@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "280973960482",
+    "project_id": "podo-market-001",
+    "storage_bucket": "podo-market-001.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:280973960482:android:de2a7b9bb99398915d317b",
+        "android_client_info": {
+          "package_name": "com.example.podomarket"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBc-tT19NdOEPZNZrBwHElDBPLCKnj5wA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
