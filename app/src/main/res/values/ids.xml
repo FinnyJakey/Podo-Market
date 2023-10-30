@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <item name="username" type="id">Username</item>
-    <item name="password" type="id">Password</item>
-    <item name="login" type="id">Login</item>
-    <item name="loading" type="id">Loading</item>
-</resources>
