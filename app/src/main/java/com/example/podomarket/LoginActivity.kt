@@ -18,15 +18,33 @@ class LoginActivity : AppCompatActivity() {
         findViewById<Button>(R.id.login)?.setOnClickListener {
             val userEmail = findViewById<EditText>(R.id.username)?.text.toString()
             val password = findViewById<EditText>(R.id.password)?.text.toString()
+            //로그인
             doLogin(userEmail, password)
         }
-    }
 
+        findViewById<Button>(R.id.create_account)?.setOnClickListener {
+            val userEmail = findViewById<EditText>(R.id.username)?.text.toString()
+            val password = findViewById<EditText>(R.id.password)?.text.toString()
+            //계정생성
+            createAccount(userEmail, password)
+        }
+    }
+    private fun createAccount(userEmail: String, password: String) {
+        Firebase.auth.createUserWithEmailAndPassword(userEmail, password)
+            .addOnCompleteListener(this) {
+                if (it.isSuccessful) { //계정 생성 성공시 로그인 -> MainActivity
+                    doLogin(userEmail, password)
+                } else {
+                    Log.w("LoginActivity", "createUserWithEmail", it.exception)
+                    Toast.makeText(this, "create account failed.", Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
     private fun doLogin(userEmail: String, password: String) {
         Firebase.auth.signInWithEmailAndPassword(userEmail, password)
             .addOnCompleteListener(this) {
                 if (it.isSuccessful) {
-                    startActivity(
+                    startActivity( //로그인 성공시 -> MainActivity
                         Intent(this, MainActivity::class.java))
                     finish()
                 } else {
