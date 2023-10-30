@@ -2,7 +2,8 @@
     <string name="app_name">Podo Market</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in</string>
-    <string name="action_sign_out">Sign out</string>
+    <string name="action_sign_in">SIGN IN</string>
+    <string name="action_sign_up">SIGN UP</string>
+    <string name="action_sign_out">SIGN OUT</string>
     <string name="title_activity_login">LoginActivity</string>
 </resources>
