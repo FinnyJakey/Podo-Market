@@ -34,8 +34,6 @@
                 android:textStyle="bold" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!-- Body -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/content1"
         android:layout_width="match_parent"

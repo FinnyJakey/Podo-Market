@@ -4,6 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="hr_color">#2B2B2B</color>
     <color name="background">#212121</color>
+    <color name="chat_you_backround"> #323538</color>
     <color name="text_01">#DCDCDC</color>
     <color name="text_02">#A2A2A2</color>
     <color name="text_03">#5D5D5D</color>
