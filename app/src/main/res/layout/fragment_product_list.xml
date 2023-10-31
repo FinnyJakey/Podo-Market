@@ -76,8 +76,10 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/primary"
         android:src="@drawable/ic_add"
+        app:tint="@color/text_01"
         android:contentDescription="add"
         android:layout_margin="20dp"
+        app:borderWidth="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
