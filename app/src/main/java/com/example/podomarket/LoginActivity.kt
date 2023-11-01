@@ -22,30 +22,20 @@ class LoginActivity : AppCompatActivity() {
             doLogin(userEmail, password)
         }
 
-        findViewById<Button>(R.id.create_account)?.setOnClickListener {
-            val userEmail = findViewById<EditText>(R.id.username)?.text.toString()
-            val password = findViewById<EditText>(R.id.password)?.text.toString()
-            //계정생성
-            createAccount(userEmail, password)
+        findViewById<Button>(R.id.move_account_activity)?.setOnClickListener {
+            startActivity(
+                Intent(this, AccountCreateActivity::class.java))
+            //약간 생각해봐하는게 뒤로가기버튼인데 finish해버리면 못돌아가지 않을까 생각...
         }
     }
-    private fun createAccount(userEmail: String, password: String) {
-        Firebase.auth.createUserWithEmailAndPassword(userEmail, password)
-            .addOnCompleteListener(this) {
-                if (it.isSuccessful) { //계정 생성 성공시 로그인 -> MainActivity
-                    doLogin(userEmail, password)
-                } else {
-                    Log.w("LoginActivity", "createUserWithEmail", it.exception)
-                    Toast.makeText(this, "create account failed.", Toast.LENGTH_SHORT).show()
-                }
-            }
-    }
+
     private fun doLogin(userEmail: String, password: String) {
         Firebase.auth.signInWithEmailAndPassword(userEmail, password)
             .addOnCompleteListener(this) {
                 if (it.isSuccessful) {
                     startActivity( //로그인 성공시 -> MainActivity
-                        Intent(this, MainActivity::class.java))
+                        Intent(this, MainActivity::class.java)
+                    )
                     finish()
                 } else {
                     Log.w("LoginActivity", "signInWithEmail", it.exception)

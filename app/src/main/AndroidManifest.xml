@@ -26,7 +26,8 @@
             android:label="@string/title_activity_login" />
         <activity
             android:name="AccountCreateActivity"
-            android:label="@string/title_activity_account_create" />
+            android:label="@string/title_activity_account_create"
+            android:parentActivityName=".LoginActivity"/>
     </application>
 
 </manifest>
