@@ -6,4 +6,6 @@
     <string name="action_sign_up">SIGN UP</string>
     <string name="action_sign_out">SIGN OUT</string>
     <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_account_create">AccountCreateActivity</string>
+
 </resources>
