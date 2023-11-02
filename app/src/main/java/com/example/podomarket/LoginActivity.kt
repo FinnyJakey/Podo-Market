@@ -25,7 +25,6 @@ class LoginActivity : AppCompatActivity() {
         findViewById<Button>(R.id.move_account_activity)?.setOnClickListener {
             startActivity(
                 Intent(this, AccountCreateActivity::class.java))
-            //약간 생각해봐하는게 뒤로가기버튼인데 finish해버리면 못돌아가지 않을까 생각...
         }
     }
 
