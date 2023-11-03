@@ -81,9 +81,7 @@ class AccountCreateActivity: AppCompatActivity() {
                 onSignUpComplete = { isSuccess ->
                     if (isSuccess) {
                         // 계정 생성이 성공했을 때의 처리
-                        val intent = Intent(this, MainActivity::class.java)
-                        startActivity(intent)
-                        finish()
+                        moveMainActivity()
                     } else {
                         // 계정 생성이 실패했을 때의 처리
                         Toast.makeText(this, "계정 생성에 실패했습니다.", Toast.LENGTH_SHORT).show()
@@ -111,5 +109,12 @@ class AccountCreateActivity: AppCompatActivity() {
             birthDay
         )
         datePickerDialog.show()
+    }
+
+    private fun moveMainActivity(){
+        startActivity( //로그인 성공시 -> MainActivity
+            Intent(this, MainActivity::class.java)
+        )
+        finish()
     }
 }
