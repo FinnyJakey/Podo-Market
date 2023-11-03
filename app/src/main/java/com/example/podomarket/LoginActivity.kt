@@ -16,10 +16,10 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
         findViewById<Button>(R.id.login)?.setOnClickListener {
-            val userEmail = findViewById<EditText>(R.id.username)?.text.toString()
-            val password = findViewById<EditText>(R.id.password)?.text.toString()
+            val loginEmail = findViewById<EditText>(R.id.username)?.text.toString()
+            val loginPassword = findViewById<EditText>(R.id.password)?.text.toString()
             //로그인
-            doLogin(userEmail, password)
+            doLogin(loginEmail, loginPassword)
         }
 
         findViewById<Button>(R.id.move_account_activity)?.setOnClickListener {
@@ -28,8 +28,8 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun doLogin(userEmail: String, password: String) {
-        Firebase.auth.signInWithEmailAndPassword(userEmail, password)
+    private fun doLogin(loginEmail: String, loginPassword: String) {
+        Firebase.auth.signInWithEmailAndPassword(loginEmail, loginPassword)
             .addOnCompleteListener(this) {
                 if (it.isSuccessful) {
                     startActivity( //로그인 성공시 -> MainActivity
