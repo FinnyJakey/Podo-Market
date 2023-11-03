@@ -3,13 +3,12 @@ package com.example.podomarket
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
+import com.example.podomarket.viewmodel.AuthViewModel
+import com.google.firebase.Timestamp
 import java.util.*
 
 
@@ -69,8 +68,28 @@ class AccountCreateActivity: AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            //1차 검증 후 -> ViewModel로 인자전달
+            //사용자 생년월일 정수 -> 타임스탬프형식으로 변경
+            val calendar = Calendar.getInstance()
+            calendar.set(Calendar.YEAR, birthYear)
+            calendar.set(Calendar.MONTH, birthMonth)
+            calendar.set(Calendar.DAY_OF_MONTH, birthDay)
+            val createBirthTimestamp = Timestamp(calendar.time)
 
+            //1차 검증 후 -> ViewModel로 인자전달
+            val authViewModel = AuthViewModel()
+            authViewModel.signUp(createEmail, createPassword, createName, createBirthTimestamp,
+                onSignUpComplete = { isSuccess ->
+                    if (isSuccess) {
+                        // 계정 생성이 성공했을 때의 처리
+                        val intent = Intent(this, MainActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    } else {
+                        // 계정 생성이 실패했을 때의 처리
+                        Toast.makeText(this, "계정 생성에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            )
         }
     }
 
