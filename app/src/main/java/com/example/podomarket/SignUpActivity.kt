@@ -27,9 +27,30 @@ class SignUpActivity: AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         //editText클릭시 DatePicker표시
-        findViewById<EditText>(R.id.create_account_birth)?.setOnClickListener {
-            showBrithDatePicker()
+        val calendar = Calendar.getInstance()
+
+        val dateSetListener = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
+            // 선택한 날짜를 텍스트뷰에 표시
+            findViewById<EditText>(R.id.create_account_birth)?.setText("$year-${month + 1}-$dayOfMonth")
+            //코드추가
+            birthYear  = calendar.get(Calendar.YEAR)
+            birthMonth = calendar.get(Calendar.MONTH)
+            birthDay = calendar.get(Calendar.DAY_OF_MONTH)
+
         }
+
+        findViewById<EditText>(R.id.create_account_birth)?.setOnClickListener {
+            DatePickerDialog(this, dateSetListener,
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)).show()
+        }
+        /*
+        findViewById<EditText>(R.id.create_account_birth)?.setOnClickListener {
+            showBirthDatePicker()
+        }
+
+         */
 
         findViewById<Button>(R.id.create_account_button)?.setOnClickListener {
             //아이디, 비번, 이름, 날짜 형식 정확한지 검증 -> 성공시 ViewModel로 인자값 전달
@@ -42,7 +63,7 @@ class SignUpActivity: AppCompatActivity() {
             }
             val createName = findViewById<EditText>(R.id.create_account_name)?.text.toString()
             //이름 검증: Null값이면 이름입력하라는 알림메세지 창 생성
-            if (createName == null) {
+            if (createName == null || createName.length<2 || createName.length>12) {
                 // 이름을 입력하라는 메시지를 사용자에게 알림
                 Toast.makeText(this, "이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -62,8 +83,9 @@ class SignUpActivity: AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            val birth = findViewById<EditText>(R.id.create_account_birth)?.text.toString()
             //생년월일 검증: 년, 월, 달이 0이아닌지 확인
-            if(birthYear == 0||birthMonth == 0||birthDay == 0){
+            if(birth == null || birthYear == 0||birthMonth == 0||birthDay == 0){
                 Toast.makeText(this, "생년월일 형식이 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -73,6 +95,9 @@ class SignUpActivity: AppCompatActivity() {
             calendar.set(Calendar.YEAR, birthYear)
             calendar.set(Calendar.MONTH, birthMonth)
             calendar.set(Calendar.DAY_OF_MONTH, birthDay)
+            calendar.set(Calendar.HOUR, 12)
+            calendar.set(Calendar.MINUTE, 0)
+            calendar.set(Calendar.SECOND, 0)
             val createBirthTimestamp = Timestamp(calendar.time)
 
             //1차 검증 후 -> ViewModel로 인자전달
@@ -93,7 +118,7 @@ class SignUpActivity: AppCompatActivity() {
 
     //메서드 생성
     // DatePicker를 표시하는 함수
-    private fun showBrithDatePicker() {
+    private fun showBirthDatePicker() {
         val calendar = Calendar.getInstance()
         birthYear  = calendar.get(Calendar.YEAR)
         birthMonth = calendar.get(Calendar.MONTH)
