@@ -12,14 +12,14 @@ import com.google.firebase.Timestamp
 import java.util.*
 
 
-class AccountCreateActivity: AppCompatActivity() {
+class SignUpActivity: AppCompatActivity() {
     //생년월일 관련 변수
     private var birthYear = 0
     private var birthMonth = 0
     private var birthDay = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_account)
+        setContentView(R.layout.activity_sign_up)
 
         //뒤로가기 버튼 구현(Manifest에 부모 액티비티를 LoginActivity로 설정)
         val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar)

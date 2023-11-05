@@ -2,28 +2,26 @@ package com.example.podomarket
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.podomarket.viewmodel.AuthViewModel
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        findViewById<Button>(R.id.login)?.setOnClickListener {
-            val loginEmail = findViewById<EditText>(R.id.username)?.text.toString()
-            val loginPassword = findViewById<EditText>(R.id.password)?.text.toString()
+        findViewById<Button>(R.id.login_button)?.setOnClickListener {
+            val loginEmail = findViewById<EditText>(R.id.login_email)?.text.toString()
+            val loginPassword = findViewById<EditText>(R.id.login_password)?.text.toString()
             //로그인
             doLogin(loginEmail, loginPassword)
         }
 
-        findViewById<Button>(R.id.move_account_activity)?.setOnClickListener { moveAccountActivity() }
+        findViewById<TextView>(R.id.sign_up_button)?.setOnClickListener { moveAccountActivity() }
     }
 
     private fun doLogin(loginEmail: String, loginPassword: String){
@@ -36,7 +34,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun moveAccountActivity(){
         startActivity(
-            Intent(this, AccountCreateActivity::class.java)
+            Intent(this, SignUpActivity::class.java)
         )
     }
 
