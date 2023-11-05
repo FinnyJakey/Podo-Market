@@ -18,7 +18,11 @@ class LoginActivity : AppCompatActivity() {
             val loginEmail = findViewById<EditText>(R.id.login_email)?.text.toString()
             val loginPassword = findViewById<EditText>(R.id.login_password)?.text.toString()
             //로그인
-            doLogin(loginEmail, loginPassword)
+            if (isLoginInputValid(loginEmail, loginPassword)) {
+                doLogin(loginEmail, loginPassword)
+            } else {
+                Toast.makeText(this, "유효한 이메일과 6자 이상의 비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
+            }
         }
 
         findViewById<TextView>(R.id.sign_up_button)?.setOnClickListener { moveAccountActivity() }
@@ -32,6 +36,9 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    private fun isLoginInputValid(email: String, password: String): Boolean {
+        return LoginUiState(email, password).isInputValid
+    }
     private fun moveAccountActivity(){
         startActivity(
             Intent(this, SignUpActivity::class.java)
