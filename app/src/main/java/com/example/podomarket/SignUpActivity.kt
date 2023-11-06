@@ -1,6 +1,5 @@
 package com.example.podomarket
 
-import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -11,12 +10,8 @@ import com.example.podomarket.viewmodel.AuthViewModel
 import com.google.firebase.Timestamp
 import java.util.*
 
-
 class SignUpActivity: AppCompatActivity() {
-    //생년월일 관련 변수
-    private var birthYear = 0
-    private var birthMonth = 0
-    private var birthDay = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
@@ -26,114 +21,66 @@ class SignUpActivity: AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        //editText클릭시 DatePicker표시
-        val calendar = Calendar.getInstance()
-
-        val dateSetListener = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
-            // 선택한 날짜를 텍스트뷰에 표시
-            findViewById<EditText>(R.id.create_account_birth)?.setText("$year-${month + 1}-$dayOfMonth")
-            //코드추가
-            birthYear  = calendar.get(Calendar.YEAR)
-            birthMonth = calendar.get(Calendar.MONTH)
-            birthDay = calendar.get(Calendar.DAY_OF_MONTH)
-
-        }
-
-        findViewById<EditText>(R.id.create_account_birth)?.setOnClickListener {
-            DatePickerDialog(this, dateSetListener,
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)).show()
-        }
-        /*
-        findViewById<EditText>(R.id.create_account_birth)?.setOnClickListener {
-            showBirthDatePicker()
-        }
-
-         */
-
         findViewById<Button>(R.id.create_account_button)?.setOnClickListener {
             //아이디, 비번, 이름, 날짜 형식 정확한지 검증 -> 성공시 ViewModel로 인자값 전달
             val createEmail = findViewById<EditText>(R.id.create_account_email)?.text.toString()
-            //아이디 검증: @이나 com이란 단어 없거나 null값이면
-            if (createEmail == null || !createEmail.contains("@") || !createEmail.contains("com")) {
-                // 이메일 형식이 올바르지 않음을 사용자에게 알림
-                Toast.makeText(this, "이메일 형식이 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
             val createName = findViewById<EditText>(R.id.create_account_name)?.text.toString()
-            //이름 검증: Null값이면 이름입력하라는 알림메세지 창 생성
-            if (createName == null || createName.length<2 || createName.length>12) {
-                // 이름을 입력하라는 메시지를 사용자에게 알림
-                Toast.makeText(this, "이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
             val createPassword = findViewById<EditText>(R.id.create_account_password)?.text.toString()
-            //비번 검증: Null값이거나 7자리 이하거나 13차리 초과면 형식에 옳지못하다는 창 생성
-            if (createPassword == null || createPassword.length <= 7 || createPassword.length > 13) {
-                // 비밀번호 형식이 올바르지 않음을 사용자에게 알림
-                Toast.makeText(this, "비밀번호 형식이 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+            val createRepassword = findViewById<EditText>(R.id.create_account_repassword)?.text.toString()
+            val createBirth = findViewById<EditText>(R.id.create_account_birth)?.text.toString()
+            if(isSignUpInputValid(createEmail, createPassword,createRepassword, createName, createBirth)){
+                //birth를 timeStamp형식으로 바꿔야함 아니면 위에서 바꾸면 됨
+                doSignUp(createEmail, createPassword, createName, makeTimeStamp(createBirth))
             }
-            val repassword = findViewById<EditText>(R.id.create_account_repassword)?.text.toString()
-            //비밀번호 재입력 검증: 같은지를 확인
-            if (createPassword != repassword) {
-                // 비밀번호가 일치하지 않음을 사용자에게 알림
-                Toast.makeText(this, "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            val birth = findViewById<EditText>(R.id.create_account_birth)?.text.toString()
-            //생년월일 검증: 년, 월, 달이 0이아닌지 확인
-            if(birth == null || birthYear == 0||birthMonth == 0||birthDay == 0){
-                Toast.makeText(this, "생년월일 형식이 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            //사용자 생년월일 정수 -> 타임스탬프형식으로 변경
-            val calendar = Calendar.getInstance()
-            calendar.set(Calendar.YEAR, birthYear)
-            calendar.set(Calendar.MONTH, birthMonth)
-            calendar.set(Calendar.DAY_OF_MONTH, birthDay)
-            calendar.set(Calendar.HOUR, 12)
-            calendar.set(Calendar.MINUTE, 0)
-            calendar.set(Calendar.SECOND, 0)
-            val createBirthTimestamp = Timestamp(calendar.time)
-
-            //1차 검증 후 -> ViewModel로 인자전달
-            val authViewModel = AuthViewModel()
-            authViewModel.signUp(createEmail, createPassword, createName, createBirthTimestamp,
-                onSignUpComplete = { isSuccess ->
-                    if (isSuccess) {
-                        // 계정 생성이 성공했을 때의 처리
-                        moveMainActivity()
-                    } else {
-                        // 계정 생성이 실패했을 때의 처리
-                        Toast.makeText(this, "계정 생성에 실패했습니다.", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            )
         }
     }
 
-    //메서드 생성
-    // DatePicker를 표시하는 함수
-    private fun showBirthDatePicker() {
-        val calendar = Calendar.getInstance()
-        birthYear  = calendar.get(Calendar.YEAR)
-        birthMonth = calendar.get(Calendar.MONTH)
-        birthDay = calendar.get(Calendar.DAY_OF_MONTH)
+    //생년월일 타입변환(String -> Timestamp) 메서드
+    private fun makeTimeStamp(birth: String):Timestamp {
+        val birthComponents = birth.split(".")
+        val birthYear = birthComponents[0].toIntOrNull() ?: 0
+        val birthMonth = birthComponents[1].toIntOrNull() ?: 0
+        val birthDay = birthComponents[2].toIntOrNull() ?: 0
 
-        val datePickerDialog = DatePickerDialog(
-            this,
-            { _, selectedYear, selectedMonth, selectedDay ->
-                findViewById<EditText>(R.id.create_account_birth)?.setText("$birthYear-${birthMonth + 1}-$birthDay")
-            },
-            birthYear,
-            birthMonth,
-            birthDay
-        )
-        datePickerDialog.show()
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.YEAR, birthYear)
+        calendar.set(Calendar.MONTH, birthMonth - 1)
+        calendar.set(Calendar.DAY_OF_MONTH, birthDay)
+        calendar.set(Calendar.HOUR, 12)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+
+        return Timestamp(calendar.time)
+    }
+
+    //계정 생성 검증 메서드
+    private fun isSignUpInputValid(email: String, password: String, repassword: String, name:String,  birth: String):Boolean{
+        val signUpUiState = SignUpUiState(email, password, repassword, name, birth)
+        if (signUpUiState.showEmailError) {
+            Toast.makeText(this, "이메일 형식이 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
+        } else if (signUpUiState.showPasswordError) {
+            Toast.makeText(this, "비밀번호 형식이 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
+        } else if (signUpUiState.showRepasswordError) {
+            Toast.makeText(this, "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
+        } else if (signUpUiState.showNameError) {
+            Toast.makeText(this, "이름을 형식에 맞게 입력해주세요.", Toast.LENGTH_SHORT).show()
+        } else if (signUpUiState.showBirthError) {
+            Toast.makeText(this, "생년월일 형식이 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
+        }
+        else{
+            Toast.makeText(this, "입력을 완료해주세요", Toast.LENGTH_SHORT).show()
+        }
+        return signUpUiState.isInputValid
+    }
+
+    //계정 생성 메서드
+    private fun doSignUp(email: String, password: String, name:String, birth: Timestamp){
+
+        val authViewModel = AuthViewModel()
+        authViewModel.signUp(email, password, name, birth) { isSuccess ->
+            if (isSuccess)moveMainActivity()
+            else Toast.makeText(this, "사용자 계정 형식이 옳지 못합니다", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun moveMainActivity(){

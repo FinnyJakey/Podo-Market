@@ -6,9 +6,9 @@ import java.util.regex.Pattern
 data class LoginUiState(
     val email: String = "",
     val password: String = "",
-    val isLoading: Boolean = false,
-    val successToSignIn: Boolean = false,
-    val userMessage: String? = null
+    //val isLoading: Boolean = false,
+    //val successToSignIn: Boolean = false,
+    //val userMessage: String? = null
 ) {
     val isInputValid: Boolean
         get() = isEmailValid && isPasswordValid
@@ -23,7 +23,7 @@ data class LoginUiState(
         }
 
 
-    val isPasswordValid: Boolean
+    private val isPasswordValid: Boolean
         get() {
             val pwPattern = "^(?=.*\\d)(?=.*[~`!@#$%\\^&*()-])(?=.*[a-z])(?=.*[A-Z]).{8,13}$" //1개 이상의 숫자, 특수문자, 소문자, 대문자, 총길이 8-13자리여야함
             val matcher: Matcher = Pattern.compile(pwPattern).matcher(password)

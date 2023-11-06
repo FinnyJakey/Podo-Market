@@ -40,8 +40,8 @@ class LoginActivity : AppCompatActivity() {
         if (loginUiState.showEmailError) {
             Toast.makeText(this, "이메일 형식이 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
         }
-        if (loginUiState.showPasswordError) {
-            Toast.makeText(this, "영문, 숫자, 특수문자를 조합하여 비밀번호를 생성해야 합니다.", Toast.LENGTH_SHORT).show()
+        else if(loginUiState.showPasswordError) {
+            Toast.makeText(this, "비밀번호 형식이 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
         }
         return loginUiState.isInputValid
     }
