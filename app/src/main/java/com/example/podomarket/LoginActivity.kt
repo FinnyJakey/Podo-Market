@@ -17,7 +17,7 @@ class LoginActivity : AppCompatActivity() {
         findViewById<Button>(R.id.login_button)?.setOnClickListener {
             val loginEmail = findViewById<EditText>(R.id.login_email)?.text.toString()
             val loginPassword = findViewById<EditText>(R.id.login_password)?.text.toString()
-            //로그인
+            //로그인 Changes Commit Suggestion
             if (isLoginInputValid(loginEmail, loginPassword)) {
                 doLogin(loginEmail, loginPassword) //검정성공시 로그인실행
             }
