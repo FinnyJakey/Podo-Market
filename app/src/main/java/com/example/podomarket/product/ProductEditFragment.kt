@@ -16,18 +16,21 @@ import com.example.podomarket.R
 class ProductEditFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_product_edit, container, false)
+        // 나가기 버튼 구현
         val exitIcon = view.findViewById<ImageView>(R.id.exit_icon)
         exitIcon.setOnClickListener {
             val fragmentManager = requireActivity().supportFragmentManager
             fragmentManager.popBackStack()
         }
+        // 판매 타입 선택용 라디오 그룹 구현
         val radioGroup = view.findViewById<RadioGroup>(R.id.product_edit_radiogroup)
+        // 다른 라디오 버튼 선택 시
         radioGroup.setOnCheckedChangeListener { group, checkedId ->
             val selectedRadioButton = view.findViewById<RadioButton>(checkedId)
-
+            // 선택된 버튼의 폰트 변경
             selectedRadioButton.setTypeface(null, Typeface.BOLD)
             selectedRadioButton.setTextColor(getResources().getColor(R.color.background))
-
+            // 선택 되지 않은 나머지 버튼의 폰트 변경
             for (i in 0 until group.childCount) {
                 val radioButton = group.getChildAt(i) as RadioButton
                 if (radioButton.id != checkedId) {

@@ -10,6 +10,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.example.podomarket.R
 
+// 드래그 가능한 프래그먼트의 추상 클래스
 abstract class DraggableFragment : Fragment() {
     private var initialX: Float = 0F
     private var lastX: Float = 0F
@@ -22,7 +23,6 @@ abstract class DraggableFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         val draggableLayout = view.findViewById<View>(R.id.draggable_layout)
 
         draggableLayout.setOnTouchListener { v, event ->

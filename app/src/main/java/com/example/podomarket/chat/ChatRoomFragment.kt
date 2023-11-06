@@ -20,6 +20,7 @@ import com.example.podomarket.common.DraggableFragment
 class ChatRoomFragment : DraggableFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_chat_room, container, false)
+        // 뒤로가기 버튼
         val backButton = view.findViewById<ImageView>(R.id.back_button)
         backButton.setOnClickListener {
             val transaction = parentFragmentManager.beginTransaction()
@@ -30,21 +31,18 @@ class ChatRoomFragment : DraggableFragment() {
             transaction.remove(this@ChatRoomFragment)
             transaction.commit()
         }
-
+        // 출력용 데이터
         val dataList: MutableList<ExampleChat> = mutableListOf()
         dataList.add(ExampleChat("안녕하세요 구매하고 싶습니다.", "me"))
         dataList.add(ExampleChat("혹시 에누리 해주실 수 있으신가요?", "me"))
         dataList.add(ExampleChat("죄송합니다 ..", "you"))
         dataList.add(ExampleChat("넵 알겠습니다.", "me"))
-        val itemClickListener = object : ChatRoomRecyclerViewAdapter.OnItemClickListener {
-            override fun onItemClick(position: Int) {
-            }
-        }
         val recyclerView = view.findViewById<RecyclerView>(R.id.chat_room_recyclerview)
-        val adapter = ChatRoomRecyclerViewAdapter(dataList,itemClickListener)
+        val adapter = ChatRoomRecyclerViewAdapter(dataList,null)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this.context)
 
+        // EditText에 값이 입력되면 전송버튼 색상 변경하도록 구현
         val messageEditText = view.findViewById<EditText>(R.id.message_edittext)
         val sendButton = view.findViewById<ImageView>(R.id.send_button)
         messageEditText.addTextChangedListener(object : TextWatcher {

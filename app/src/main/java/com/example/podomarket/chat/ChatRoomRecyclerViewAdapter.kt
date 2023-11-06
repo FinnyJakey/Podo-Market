@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.podomarket.R
 import com.example.podomarket.chat.ExampleChat
 
-class ChatRoomRecyclerViewAdapter(private val dataList: List<ExampleChat>, private val itemClickListener: OnItemClickListener) : RecyclerView.Adapter<ChatRoomRecyclerViewAdapter.MyViewHolder>() {
+class ChatRoomRecyclerViewAdapter(private val dataList: List<ExampleChat>, private val itemClickListener: OnItemClickListener?) : RecyclerView.Adapter<ChatRoomRecyclerViewAdapter.MyViewHolder>() {
     inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textView: TextView = itemView.findViewById(R.id.message)
 
@@ -14,7 +14,7 @@ class ChatRoomRecyclerViewAdapter(private val dataList: List<ExampleChat>, priva
             itemView.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    itemClickListener.onItemClick(position)
+                    itemClickListener?.onItemClick(position)
                 }
             }
         }

@@ -16,7 +16,7 @@ class ProductListFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_product_list, container, false)
         val chatIcon = view.findViewById<ImageView>(R.id.chat_icon)
-        //채팅 아이콘
+        //채팅 버튼 구현
         chatIcon.setOnClickListener {
             val chatListFragment = ChatListFragment()
             val transaction = parentFragmentManager.beginTransaction()
@@ -38,8 +38,10 @@ class ProductListFragment : Fragment() {
 
         // 출력용 데이터
         val dataList: MutableList<String> = mutableListOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7")
+        // 아이템 클릭 시
         val itemClickListener = object : ProductRecyclerViewAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
+                // 판매글 상세 화면 프래그먼트로 이동
                 val productDetailFragment = ProductDetailFragment()
                 val transaction = parentFragmentManager.beginTransaction()
                 transaction.setCustomAnimations(
@@ -51,11 +53,10 @@ class ProductListFragment : Fragment() {
                 transaction.commit()
             }
         }
+        // 리사이클러 뷰에 아이템 추가
         val recyclerView = view.findViewById<RecyclerView>(R.id.product_recyclerview)
         val adapter = ProductRecyclerViewAdapter(dataList,itemClickListener)
         recyclerView.adapter = adapter
-
-        // RecyclerView에 레이아웃 매니저 설정
         recyclerView.layoutManager = LinearLayoutManager(this.context)
         return view
     }
