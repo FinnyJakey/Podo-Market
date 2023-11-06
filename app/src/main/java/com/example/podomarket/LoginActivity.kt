@@ -47,7 +47,7 @@ class LoginActivity : AppCompatActivity() {
     }
     private fun moveAccountActivity(){
         startActivity(
-            Intent(this, SignUpActivity::class.java)
+            Intent(this, SignUpActivity::class.java) // SignUpActivity
         )
     }
 
