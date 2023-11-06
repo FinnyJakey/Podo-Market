@@ -5,20 +5,20 @@
     android:layout_width="match_parent"
     android:background="@color/background"
     android:paddingTop="20dp"
-    android:paddingBottom="20dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
         <androidx.cardview.widget.CardView
             android:id="@+id/user_image_cardview"
             android:layout_width="55dp"
             android:layout_height="55dp"
-            android:layout_marginLeft="25dp"
+            android:layout_marginLeft="20dp"
             android:layout_marginTop="2dp"
             android:layout_marginRight="2dp"
-            android:layout_marginBottom="2dp"
+            android:layout_marginBottom="20dp"
             app:cardCornerRadius="50dp"
             app:cardElevation="0dp"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
@@ -69,5 +69,9 @@
         app:layout_constraintStart_toEndOf="@+id/user_image_cardview"
         app:layout_constraintEnd_toEndOf="parent"
     />
-
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/hr_color"
+        app:layout_constraintBottom_toBottomOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>

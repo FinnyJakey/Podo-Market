@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
+    android:clickable="true"
     tools:context=".MainActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,6 +20,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
         <ImageView
+            android:id="@+id/exit_icon"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:src="@drawable/ic_close"
@@ -119,7 +121,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/product_edit_type"
                 app:layout_constraintStart_toStartOf="parent">
 
-                <CheckBox
+                <RadioButton
                     android:id="@+id/product_edit_type_checkbox_sell"
                     android:layout_width="75dp"
                     android:layout_height="35dp"
@@ -128,9 +130,11 @@
                     android:checked="true"
                     android:background="@drawable/product_type_checkbox"
                     android:paddingBottom="1dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/background"
                     android:text="판매하기" />
 
-                <CheckBox
+                <RadioButton
                     android:id="@+id/product_edit_type_checkbox_share"
                     android:layout_width="75dp"
                     android:layout_height="37dp"

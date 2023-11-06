@@ -40,6 +40,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
+                android:id="@+id/chat_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_chat"
@@ -75,6 +76,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/primary"
+        android:clickable="true"
         android:src="@drawable/ic_add"
         app:tint="@color/text_01"
         android:contentDescription="add"
