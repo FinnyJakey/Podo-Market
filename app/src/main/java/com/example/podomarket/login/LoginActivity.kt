@@ -1,4 +1,4 @@
-package com.example.podomarket
+package com.example.podomarket.login
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,6 +7,9 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.podomarket.MainActivity
+import com.example.podomarket.R
+import com.example.podomarket.signup.SignUpActivity
 import com.example.podomarket.viewmodel.AuthViewModel
 
 class LoginActivity : AppCompatActivity() {
