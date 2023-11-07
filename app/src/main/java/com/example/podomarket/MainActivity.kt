@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import com.example.podomarket.login.LoginActivity
 import com.example.podomarket.viewmodel.AuthViewModel
-import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
     private val authViewModel = AuthViewModel()
@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         //로그인 한 상태로 실행되도록 하는 코드(바로 MainActivity갈경우만 필요) - 추후지워야함
-        //doTestLogin()
+        doTestLogin()
 
         if(authViewModel.getCurrentUserUid() == null){
             //로그인 안되어있을시 LoginActivity로 시작
@@ -34,8 +34,8 @@ class MainActivity : AppCompatActivity() {
 
     //바로 로그인 원할시 사용
     private fun doTestLogin(){
-        var loginId = "jisu1@naver.com"
-        var loginPwd = "@Abcde12"
+        var loginId = "android@hansung.ac.kr"
+        var loginPwd = "hansungandroid"
         authViewModel.signIn(loginId, loginPwd) { isSuccess ->
             if (isSuccess)
             else Toast.makeText(this, "로그인 정보가 옳지 않습니다", Toast.LENGTH_SHORT).show()
