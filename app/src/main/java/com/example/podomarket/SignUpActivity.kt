@@ -84,7 +84,7 @@ class SignUpActivity: AppCompatActivity() {
     }
 
     // DatePicker를 표시하는 메서드
-    private fun showDatePickerDialog(view: View) {
+   fun showDatePickerDialog(view: View) {
         val builder = MaterialDatePicker.Builder.datePicker()
         val picker = builder.build()
         picker.addOnPositiveButtonClickListener { selection ->

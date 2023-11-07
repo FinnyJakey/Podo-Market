@@ -19,7 +19,7 @@ class LoginActivity : AppCompatActivity() {
             val loginPassword = findViewById<EditText>(R.id.login_password)?.text.toString()
             //로그인 Changes Commit Suggestion
             if (isLoginInputValid(loginEmail, loginPassword)) {
-                doLogin(loginEmail, loginPassword) //검정성공시 로그인실행
+                doLogin(loginEmail, loginPassword) //검증성공시 로그인실행
             }
             else{
                 Toast.makeText(this, "이메일, 비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
