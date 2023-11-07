@@ -69,7 +69,7 @@
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_margin="18dp"
-                        app:cardCornerRadius="50dp"
+                        app:cardCornerRadius="25dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         >
