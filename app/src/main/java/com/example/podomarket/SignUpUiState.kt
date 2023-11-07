@@ -42,22 +42,22 @@ class SignUpUiState(
 
     private val isBirthValid: Boolean
         get() {
-            val birthComponents = birth.split(".")
-            if (birthComponents.size != 3 || birthComponents[0].length != 4 || birthComponents[1].length != 2 || birthComponents[2].length != 2) {
+            val birthComponents = birth.split("/")
+            if (birthComponents.size != 3 || birthComponents[0].length != 2 || birthComponents[1].length != 2 || birthComponents[2].length != 4) {
                 return false
             }
-            val birthYear = birthComponents[0].toIntOrNull() ?: 0
-            val birthMonth = birthComponents[1].toIntOrNull() ?: 0
-            val birthDay = birthComponents[2].toIntOrNull() ?: 0
+            val birthMonth= birthComponents[0].toIntOrNull() ?: 0
+            val birthDay = birthComponents[1].toIntOrNull() ?: 0
+            val birthYear= birthComponents[2].toIntOrNull() ?: 0
 
             val currentCalendar = Calendar.getInstance()
             val currentTimestamp = currentCalendar.timeInMillis
 
             val userCalendar = Calendar.getInstance()
-            userCalendar.set(birthYear, birthMonth - 1, birthDay, 12, 0, 0)
+            userCalendar.set(birthYear, birthMonth - 1, birthDay, 0, 0, 0)
             val userTimestamp = userCalendar.timeInMillis
 
-            return birthYear != 0 && birthMonth != 0 && birthDay != 0 && userTimestamp < currentTimestamp
+            return userTimestamp < currentTimestamp
         }
 
     val showEmailError: Boolean

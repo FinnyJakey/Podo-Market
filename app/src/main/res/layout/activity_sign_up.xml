@@ -114,10 +114,14 @@
             android:id="@+id/create_account_birth"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="date"
-            android:ems="10"/>
+            android:inputType="none"
+            android:onClick="showDatePickerDialog"
+            android:cursorVisible="false"
+            android:focusable="false"
+            android:clickable="true"
+            android:longClickable="false"
+            android:drawableRight="@drawable/ic_calendar" />
     </com.google.android.material.textfield.TextInputLayout>
-
     <Button
         android:id="@+id/create_account_button"
         android:layout_width="0dp"

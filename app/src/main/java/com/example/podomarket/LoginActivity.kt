@@ -21,6 +21,9 @@ class LoginActivity : AppCompatActivity() {
             if (isLoginInputValid(loginEmail, loginPassword)) {
                 doLogin(loginEmail, loginPassword) //검정성공시 로그인실행
             }
+            else{
+                Toast.makeText(this, "이메일, 비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
+            }
         }
 
         findViewById<TextView>(R.id.sign_up_button)?.setOnClickListener { moveAccountActivity() }
@@ -30,7 +33,7 @@ class LoginActivity : AppCompatActivity() {
         val authViewModel = AuthViewModel()
         authViewModel.signIn(loginEmail, loginPassword) { isSuccess ->
             if (isSuccess)moveMainActivity()
-            else Toast.makeText(this, "로그인 정보가 옳지 않습니다", Toast.LENGTH_SHORT).show()
+            else Toast.makeText(this, "등록된 회원 정보가 존재하지 않습니다", Toast.LENGTH_SHORT).show()
         }
     }
 
