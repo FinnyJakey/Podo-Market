@@ -1,6 +1,7 @@
 package com.example.podomarket.product
 import ProductRecyclerViewAdapter
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.podomarket.MainActivity
 import com.example.podomarket.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -35,6 +37,19 @@ class ProductListFragment : Fragment() {
             transaction.commit()
         }
 
+        // 로그아웃 버튼
+        val logoutButton = view.findViewById<ImageView>(R.id.logout_button)
+        logoutButton.setOnClickListener {
+            val alertDialog = AlertDialog.Builder(this.context)
+            alertDialog.setTitle("로그아웃 확인")
+            alertDialog.setMessage("로그아웃하시겠습니까?")
+            alertDialog.setPositiveButton("로그아웃") { dialog, which ->
+                (activity as MainActivity).Logout()
+            }
+            alertDialog.setNegativeButton("취소") { dialog, which ->
+            }
+            alertDialog.show()
+        }
 
         // 출력용 데이터
         val dataList: MutableList<String> = mutableListOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7")
