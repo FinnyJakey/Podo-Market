@@ -161,6 +161,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:inputType="number"
                 android:text="자세한 설명"
                 android:textSize="14dp"
                 android:textColor="@color/text_01"

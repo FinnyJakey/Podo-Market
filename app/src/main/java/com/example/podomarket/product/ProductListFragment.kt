@@ -1,17 +1,18 @@
 package com.example.podomarket.product
 import ProductRecyclerViewAdapter
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.podomarket.MainActivity
 import com.example.podomarket.R
+import com.example.podomarket.viewmodel.AuthViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class ProductListFragment : Fragment() {

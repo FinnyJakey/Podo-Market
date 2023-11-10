@@ -79,7 +79,6 @@ class ProductAddFragment : Fragment() {
             val title =
                 view.findViewById<EditText>(R.id.product_sell_title_edittext).text.toString()
             val userId: String? = authViewModel.getCurrentUserUid()
-            var userName = ""
 
             //데이터 검증
             if (userId == null) {
@@ -91,25 +90,40 @@ class ProductAddFragment : Fragment() {
             } else {
                 //content, pictures, title 유효성 검사
                 val productAddUiState = ProductAddUiState(content, pictures, title)
-                if (productAddUiState.isTitleValid()) {
+                if (!productAddUiState.isTitleValid()) {
                     Toast.makeText(requireContext(), "제목을 입력하세요", Toast.LENGTH_SHORT).show()
-                } else if (productAddUiState.isPicturesValid()) {
+                } else if (!productAddUiState.isPicturesValid()) {
                     Toast.makeText(requireContext(), "사진을 첨부해주세요", Toast.LENGTH_SHORT).show()
-                } else if (productAddUiState.isContentValid()) {
+                } else if (!productAddUiState.isContentValid()) {
                     Toast.makeText(requireContext(), "내용을 입력해주세요", Toast.LENGTH_SHORT).show()
                 } else {
                     val createdAt = Timestamp(Date())
                     val sold = false
-                    userId?.let {
-                        authViewModel.getUserName(it) { name ->
-                            userName = name
-                        }
-                    }
-                    //검증 통과후 판매글 업로드(addBoard함수가 suspend처리되어있어 코루틴 내에서 호출해야한다)
-                    CoroutineScope(Dispatchers.Main).launch {
-                        val isSuccess = boardViewModel.addBoard(content, createdAt, pictures, price, sold, title, userId, userName){isSuceess->
-                            if(isSuceess) moveListFragment()
-                            else Toast.makeText(requireContext(), "업로드 실패, 내용을 추가 또는 수정해주세요", Toast.LENGTH_SHORT).show()
+                    var userName = ""
+                    authViewModel.getUser(userId) { email, name ->
+                        userName = name
+
+                        Toast.makeText(requireContext(), "userName: $userName", Toast.LENGTH_SHORT)
+
+                        //검증 통과후 판매글 업로드(addBoard함수가 suspend처리되어있어 코루틴 내에서 호출해야한다)
+                        CoroutineScope(Dispatchers.Main).launch {
+                            boardViewModel.addBoard(
+                                content,
+                                createdAt,
+                                pictures,
+                                price,
+                                sold,
+                                title,
+                                userId,
+                                userName
+                            ) { isSuceess ->
+                                if (isSuceess) moveListFragment()
+                                else Toast.makeText(
+                                    requireContext(),
+                                    "업로드 실패, 내용을 추가 또는 수정해주세요",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
                     }
                 }
