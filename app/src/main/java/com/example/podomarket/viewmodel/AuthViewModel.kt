@@ -12,6 +12,14 @@ class AuthViewModel : ViewModel() {
     fun getCurrentUserUid(): String? {
         return auth.currentUser?.uid
     }
+    fun getUserName(uuid: String, onGetUserNameComplete: (String) -> Unit) {
+        db.collection("User")
+            .document(uuid)
+            .get()
+            .addOnSuccessListener {
+                onGetUserNameComplete(it.data?.get("name").toString())
+            }
+    }
 
     fun getCurrentUser(onGetCurrentUserComplete: (email: String, name: String) -> Unit) {
         db.collection("User")

@@ -1,14 +1,8 @@
 package com.example.podomarket.login
 
-import java.util.regex.Matcher
-import java.util.regex.Pattern
-
 data class LoginUiState(
     val email: String = "",
     val password: String = "",
-    //val isLoading: Boolean = false,
-    //val successToSignIn: Boolean = false,
-    //val userMessage: String? = null
 ) {
     val isInputValid: Boolean
         get() = isEmailValid && isPasswordValid

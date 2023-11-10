@@ -189,19 +189,20 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:orientation="horizontal">
+
         <Button
+            android:id="@+id/product_sell_enroll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/button_background"
-            android:layout_marginBottom="20dp"
             android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
             android:layout_marginTop="10dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/button_background"
             android:paddingBottom="6dp"
             android:text="작성 완료"
             android:textSize="16dp"
-            android:textStyle="bold"
-            />
+            android:textStyle="bold" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

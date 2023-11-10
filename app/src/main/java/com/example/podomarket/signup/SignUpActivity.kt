@@ -99,7 +99,6 @@ class SignUpActivity: AppCompatActivity() {
 
     //계정 생성 메서드
     private fun doSignUp(email: String, password: String, name:String, birth: Timestamp){
-
         val authViewModel = AuthViewModel()
         authViewModel.signUp(email, password, name, birth) { isSuccess ->
             if (isSuccess)moveMainActivity()
