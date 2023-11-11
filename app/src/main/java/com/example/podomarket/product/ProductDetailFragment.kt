@@ -17,6 +17,9 @@ import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
+import com.bumptech.glide.Glide
 import com.example.podomarket.R
 import com.example.podomarket.common.DraggableFragment
 import com.example.podomarket.model.BoardModel
@@ -27,7 +30,6 @@ import com.google.firebase.Timestamp
 // 제품 상세 페이지
 class ProductDetailFragment : DraggableFragment() {
     private val boardViewModel = BoardViewModel()
-
     companion object {
         private const val ARG_BOARD_UUID = "arg_board_uuid"
 
@@ -91,6 +93,8 @@ class ProductDetailFragment : DraggableFragment() {
         }
         val boardUuid = arguments?.getString(ARG_BOARD_UUID)
 
+
+
         // Board 정보를 가져와서 UI에 표시
         boardUuid?.let { uuid ->
             boardViewModel.getBoard(uuid) { board ->
@@ -102,25 +106,31 @@ class ProductDetailFragment : DraggableFragment() {
     }
 
     private fun displayBoardInfo(view: View, board: BoardModel) {
-        // 대표 이미지 표시 (여기서는 첫 번째 이미지를 대표 이미지로 사용)
+        // 대표 이미지 표시
         val representativeImage = view.findViewById<ImageView>(R.id.detail_product_image)
-        board.pictures.firstOrNull()?.let { imageUrl ->
-            // 이미지 로딩 라이브러리를 사용하여 이미지 로드 (예: Glide, Picasso 등)
-            // 예시로 가정하고 Glide를 사용하는 코드를 작성
-            // Glide.with(requireContext()).load(imageUrl).into(representativeImage)
+
+        val firstImageUrl = board.pictures.firstOrNull()
+
+        //Glide를 통해 이미지 업로드
+        firstImageUrl?.let { imageUrl ->
+            Glide.with(view.context)
+                .load(imageUrl)
+                .into(representativeImage)
         }
 
         // 상품 제목, 판매자 이름, 가격, 몇 분전 게시물인지 표시
         val titleTextView = view.findViewById<TextView>(R.id.product_detail_title)
         val userNameTextView = view.findViewById<TextView>(R.id.seller_name_2)
-        val priceTextView = view.findViewById<TextView>(R.id.product_price)
+        val contentTextView = view.findViewById<TextView>(R.id.product_detail_content)
         val timeAgoTextView = view.findViewById<TextView>(R.id.product_detail_time)
+        val priceTextView = view.findViewById<TextView>(R.id.product_detail_price)
         val timeAgo = calculateTimeAgo(board.createdAt)
 
-        titleTextView.text = board.title
         userNameTextView.text = board.userName
-        priceTextView.text = "${board.price} 원"
+        titleTextView.text = board.title
         timeAgoTextView.text = timeAgo
+        contentTextView.text = board.content
+        priceTextView.text = "${board.price} 원"
     }
 
     //게시물 올린시간 계산(1시간 미만시 분, 1일 미만시 시간, 이외에는 며칠인지 표시

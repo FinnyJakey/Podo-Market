@@ -61,6 +61,7 @@ class ProductListFragment : Fragment() {
             alertDialog.show()
         }
 
+
         // 리사이클러뷰 설정
         recyclerView = view.findViewById(R.id.product_recyclerview)
         adapter = ProductRecyclerViewAdapter(emptyList(), itemClickListener)
@@ -68,10 +69,12 @@ class ProductListFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         // 게시물 목록을 가져와서 업데이트
+        boardViewModel.getAllBoards()
+
+        // 리사이클러뷰에 데이터 갱신
         boardViewModel.getBoardsLiveData().observe(viewLifecycleOwner, Observer { boards ->
             adapter.setBoards(boards)
         })
-
         return view
     }
 

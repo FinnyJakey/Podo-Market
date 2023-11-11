@@ -100,6 +100,7 @@
                 android:background="@drawable/border_background"
                 android:textSize="16dp"
                 android:hint="제목"
+                android:textColor="@color/text_01"
                 app:layout_constraintTop_toBottomOf="@+id/product_sell_title"
                 app:layout_constraintStart_toStartOf="parent"/>
             <TextView
@@ -153,6 +154,7 @@
                 android:padding="12dp"
                 android:background="@drawable/border_background"
                 android:textSize="16dp"
+                android:textColor="@color/text_01"
                 android:hint="￦ 가격을 입력해주세요."
                 android:inputType="number"
                 app:layout_constraintTop_toBottomOf="@+id/product_sell_radiogroup"
@@ -178,6 +180,7 @@
                 android:layout_marginTop="10dp"
                 android:padding="12dp"
                 android:textSize="16dp"
+                android:textColor="@color/text_01"
                 android:hint="게시글 내용을 작성해주세요.\n"
                 app:layout_constraintTop_toBottomOf="@+id/product_sell_detail"
                 app:layout_constraintStart_toStartOf="parent"/>
