@@ -63,21 +63,19 @@ class ProductAddFragment : Fragment() {
         }
 
         // 이미지 추가 버튼
-        val addImageButton = view.findViewById<LinearLayout>(R.id.product_sell_add_image_button)
-        addImageButton.setOnClickListener {
-            // 갤러리 열기
-            openGalleryForImage()
-        }
+        addIamgeButton(view)
 
         //판매 물품 등록
+        addProductButton(view)
+
+        return view
+    }
+
+    private fun addProductButton(view:View){
         view.findViewById<Button>(R.id.product_sell_enroll).setOnClickListener {
-            val content =
-                view.findViewById<EditText>(R.id.product_sell_detail_edit_text).text.toString()
-            val price: Number? =
-                view.findViewById<EditText>(R.id.product_sell_price_edit_text).text.toString()
-                    .toIntOrNull()
-            val title =
-                view.findViewById<EditText>(R.id.product_sell_title_edittext).text.toString()
+            val content = view.findViewById<EditText>(R.id.product_sell_detail_edit_text).text.toString()
+            val price: Number? = view.findViewById<EditText>(R.id.product_sell_price_edit_text).text.toString().toIntOrNull()
+            val title = view.findViewById<EditText>(R.id.product_sell_title_edittext).text.toString()
             val userId: String? = authViewModel.getCurrentUserUid()
 
             //데이터 검증
@@ -100,6 +98,7 @@ class ProductAddFragment : Fragment() {
                     val createdAt = Timestamp(Date())
                     val sold = false
                     var userName = ""
+                    //비동기문제때문에 괄호위치 아래처럼 해야함
                     authViewModel.getUser(userId) { email, name ->
                         userName = name
 
@@ -107,32 +106,18 @@ class ProductAddFragment : Fragment() {
 
                         //검증 통과후 판매글 업로드(addBoard함수가 suspend처리되어있어 코루틴 내에서 호출해야한다)
                         CoroutineScope(Dispatchers.Main).launch {
-                            boardViewModel.addBoard(
-                                content,
-                                createdAt,
-                                pictures,
-                                price,
-                                sold,
-                                title,
-                                userId,
-                                userName
+                            boardViewModel.addBoard(content, createdAt, pictures, price, sold, title, userId, userName
                             ) { isSuceess ->
                                 if (isSuceess) moveListFragment()
-                                else Toast.makeText(
-                                    requireContext(),
-                                    "업로드 실패, 내용을 추가 또는 수정해주세요",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                else Toast.makeText(requireContext(), "업로드 실패, 내용을 추가 또는 수정해주세요", Toast.LENGTH_SHORT).show()
                             }
                         }
                     }
                 }
             }
         }
-        return view
     }
-
-    private fun moveListFragment(){
+    private fun moveListFragment() {
         val fragmentManager = requireActivity().supportFragmentManager
         val productListFragment = ProductListFragment()
         val transaction = fragmentManager.beginTransaction()
@@ -141,6 +126,21 @@ class ProductAddFragment : Fragment() {
         transaction.commit()
     }
 
+    private fun addIamgeButton(view: View){
+        val addImageButton = view.findViewById<LinearLayout>(R.id.product_sell_add_image_button)
+        addImageButton.setOnClickListener {
+            // 갤러리 열기
+            openGalleryForImage()
+        }
+
+    }
+    //이미지 관련
+    private fun openGalleryForImage() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        imagePickerLauncher.launch(intent)
+    }
+
+    //이미지 관련 메서드
     private val imagePickerLauncher =
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
@@ -161,15 +161,12 @@ class ProductAddFragment : Fragment() {
                 }
             }
         }
-    private fun openGalleryForImage() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        imagePickerLauncher.launch(intent)
-    }
 
     @Throws(IOException::class)
     private fun createImageFile(): File {
         // 이미지 파일 이름 생성
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val timeStamp: String =
+            SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val imageFileName = "JPEG_$timeStamp"
         val storageDir: File? = context?.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return File.createTempFile(

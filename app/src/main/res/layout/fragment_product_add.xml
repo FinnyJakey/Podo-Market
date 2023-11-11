@@ -154,6 +154,7 @@
                 android:background="@drawable/border_background"
                 android:textSize="16dp"
                 android:hint="￦ 가격을 입력해주세요."
+                android:inputType="number"
                 app:layout_constraintTop_toBottomOf="@+id/product_sell_radiogroup"
                 app:layout_constraintStart_toStartOf="parent"/>
             <TextView
