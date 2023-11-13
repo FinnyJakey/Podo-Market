@@ -2,11 +2,14 @@ package com.example.podomarket.login
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isInvisible
 import com.example.podomarket.MainActivity
 import com.example.podomarket.R
 import com.example.podomarket.signup.SignUpActivity
@@ -24,8 +27,9 @@ class LoginActivity : AppCompatActivity() {
             if (isLoginInputValid(loginEmail, loginPassword)) {
                 doLogin(loginEmail, loginPassword) //검증성공시 로그인실행
             }
-            else{
-                Toast.makeText(this, "이메일, 비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
+            else {
+                // 이메일 혹은 패스워드가 입력되지 않은 경우
+                displayLoginError(LoginErrorMessages.EMPTY_EMAIL_PASSWORD)
             }
         }
 
@@ -36,7 +40,7 @@ class LoginActivity : AppCompatActivity() {
         val authViewModel = AuthViewModel()
         authViewModel.signIn(loginEmail, loginPassword) { isSuccess ->
             if (isSuccess)moveMainActivity()
-            else Toast.makeText(this, "등록된 회원 정보가 존재하지 않습니다", Toast.LENGTH_SHORT).show()
+            else displayLoginError(LoginErrorMessages.NO_REGISTERED_USER) // 등록된 이메일이 없거나 비밀번호가 틀린 경우
         }
     }
 
@@ -44,10 +48,12 @@ class LoginActivity : AppCompatActivity() {
     private fun isLoginInputValid(email: String, password: String): Boolean {
         val loginUiState = LoginUiState(email, password)
         if (loginUiState.showEmailError) {
-            Toast.makeText(this, "이메일 형식이 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
+            // 이메일 형식이 잘못된 경우
+            displayLoginError(LoginErrorMessages.INVALID_EMAIL_FORMAT)
         }
         else if(loginUiState.showPasswordError) {
-            Toast.makeText(this, "비밀번호 형식이 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
+            // 비밀번호 형식이 잘못된 경우
+            displayLoginError(LoginErrorMessages.INVALID_PASSWORD_FORMAT)
         }
         return loginUiState.isInputValid
     }
@@ -62,5 +68,11 @@ class LoginActivity : AppCompatActivity() {
             Intent(this, MainActivity::class.java)
         )
         finish()
+    }
+
+    private fun displayLoginError(errorMessage: String){
+        val errorTextview = findViewById<TextView>(R.id.login_error_textview);
+        errorTextview.text = errorMessage;
+        errorTextview.visibility = View.VISIBLE;
     }
 }

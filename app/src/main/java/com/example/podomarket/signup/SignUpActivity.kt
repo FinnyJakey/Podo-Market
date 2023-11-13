@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.podomarket.MainActivity
@@ -16,8 +17,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class SignUpActivity: AppCompatActivity() {
-
-    private var errorMessage = "입력하지 않은 란이 존재합니다"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
@@ -33,7 +32,6 @@ class SignUpActivity: AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.create_account_button)?.setOnClickListener {
-            errorMessage = "입력하지 않은 란이 존재합니다"
             //아이디, 비번, 이름, 날짜 형식 정확한지 검증 -> 성공시 ViewModel로 인자값 전달
             val createEmail = findViewById<EditText>(R.id.create_account_email)?.text.toString()
             val createName = findViewById<EditText>(R.id.create_account_name)?.text.toString()
@@ -45,7 +43,7 @@ class SignUpActivity: AppCompatActivity() {
                 doSignUp(createEmail, createPassword, createName, makeTimeStamp(createBirth))
             }
             else {
-                Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
+                displayLoginError(SignUpErrorMessages.MISSING_FIELDS)
             }
         }
     }
@@ -72,15 +70,15 @@ class SignUpActivity: AppCompatActivity() {
     private fun isSignUpInputValid(email: String, password: String, repassword: String, name:String,  birth: String):Boolean{
         val signUpUiState = SignUpUiState(email, password, repassword, name, birth)
         if (signUpUiState.showEmailError) {
-            errorMessage = "이메일 형식이 올바르지 않습니다"
+            displayLoginError(SignUpErrorMessages.INVALID_EMAIL_FORMAT)
         } else if (signUpUiState.showPasswordError) {
-            errorMessage = "비밀번호 형식이 올바르지 않습니다"
+            displayLoginError(SignUpErrorMessages.INVALID_PASSWORD_FORMAT)
         } else if (signUpUiState.showRepasswordError) {
-            errorMessage = "비밀번호가 일치하지 않습니다"
+            displayLoginError(SignUpErrorMessages.PASSWORD_MISMATCH)
         } else if (signUpUiState.showNameError) {
-            errorMessage = "이름을 형식에 맞게 입력해주세요."
+            displayLoginError(SignUpErrorMessages.INVALID_NAME_FORMAT)
         } else if (signUpUiState.showBirthError) {
-            errorMessage = "날짜가 올바르지 않습니다"
+            displayLoginError(SignUpErrorMessages.INVALID_BIRTH_FORMAT)
         }
         return signUpUiState.isInputValid
     }
@@ -103,7 +101,7 @@ class SignUpActivity: AppCompatActivity() {
         val authViewModel = AuthViewModel()
         authViewModel.signUp(email, password, name, birth) { isSuccess ->
             if (isSuccess)moveMainActivity()
-            else Toast.makeText(this, "사용자 계정 형식이 옳지 못합니다", Toast.LENGTH_SHORT).show()
+            else displayLoginError(SignUpErrorMessages.SIGN_UP_FAILED)
         }
     }
 
@@ -112,5 +110,11 @@ class SignUpActivity: AppCompatActivity() {
             Intent(this, MainActivity::class.java)
         )
         finish()
+    }
+
+    private fun displayLoginError(errorMessage: String){
+        val errorTextview = findViewById<TextView>(R.id.sign_up_error_textview);
+        errorTextview.text = errorMessage;
+        errorTextview.visibility = View.VISIBLE;
     }
 }
