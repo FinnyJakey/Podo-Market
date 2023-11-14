@@ -1,25 +1,15 @@
 package com.example.podomarket.product
 
-import android.app.Activity
-import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
-import android.os.Environment
-import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.example.podomarket.R
 import com.example.podomarket.model.BoardModel
 import com.example.podomarket.viewmodel.BoardViewModel
-import kotlinx.coroutines.launch
-import java.io.File
-import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.*
 
 class ProductEditFragment : Fragment() {
     private val boardViewModel = BoardViewModel()
@@ -35,21 +25,42 @@ class ProductEditFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_product_edit, container, false)
-        // 나가기 버튼 구현
+
+        // 나가기 버튼
+        addExitIcon(view)
+
+        // 판매 타입 선택 라디오 버튼
+        addSelectSellTypeRadioGroup(view)
+
+        // 판매 완료 선택 라디오 버튼
+        addSelectSoldRadioGroup(view)
+
+        // Board 정보 가져와서 사용
+        val boardUuid = arguments?.getString(ARG_BOARD_UUID)
+        boardUuid?.let { uuid ->
+            boardViewModel.getBoard(uuid) { board ->
+                // 상품 정보 데이터 레이아웃에 표시하는 함수
+                displayBoardInfo(view, board)
+                // 수정 완료 버튼 이벤트
+                editCompleteButton(view, board)
+            }
+        }
+        return view
+    }
+
+    private fun addExitIcon(view:View){
         val exitIcon = view.findViewById<ImageView>(R.id.exit_icon)
         exitIcon.setOnClickListener {
             val fragmentManager = requireActivity().supportFragmentManager
             fragmentManager.popBackStack()
         }
-        // 판매 타입 선택용 라디오 그룹 구현
+    }
+
+    private fun addSelectSellTypeRadioGroup(view:View){
         val radioGroup = view.findViewById<RadioGroup>(R.id.product_edit_radiogroup)
-        // 다른 라디오 버튼 선택 시
+
         radioGroup.setOnCheckedChangeListener { group, checkedId ->
             val selectedRadioButton = view.findViewById<RadioButton>(checkedId)
             // 선택된 버튼의 폰트 변경
@@ -76,8 +87,11 @@ class ProductEditFragment : Fragment() {
                 priceEditText.isEnabled = true
             }
         }
+    }
+
+    private fun addSelectSoldRadioGroup(view:View){
         val radioSoldGroup = view.findViewById<RadioGroup>(R.id.product_edit_situation_radiogroup)
-        //판매중, 판매완료 버튼 클릭리스너 생성
+
         radioSoldGroup.setOnCheckedChangeListener { group, checkedId ->
             val selectedRadioButton = view.findViewById<RadioButton>(checkedId)
             // 선택된 버튼의 폰트 변경
@@ -93,18 +107,6 @@ class ProductEditFragment : Fragment() {
             }
         }
 
-        //Board 정보를 가져와서 각 란에 표시
-        val boardUuid = arguments?.getString(ARG_BOARD_UUID)
-
-        boardUuid?.let { uuid ->
-            boardViewModel.getBoard(uuid) { board ->
-                // 상품 정보 UI에 표시
-                displayBoardInfo(view, board)
-                editCompleteButton(view, board)
-            }
-        }
-
-        return view
     }
 
     private fun displayBoardInfo(view: View, board: BoardModel) {
@@ -114,11 +116,12 @@ class ProductEditFragment : Fragment() {
         titleTextView.text = board.title
         contentTextView.text = board.content
         priceTextView.text = "${board.price}"
-        //sold상태에 따라서 버튼 클릭 상태 나타내기
-        showSoldButton(view, board)
+
+        // sold상태에 따라서 버튼 클릭 상태 나타내기
+        displaySoldButton(view, board)
     }
 
-    private fun showSoldButton(view: View, board: BoardModel){
+    private fun displaySoldButton(view: View, board: BoardModel){
         val radioSoldGroup = view.findViewById<RadioGroup>(R.id.product_edit_situation_radiogroup)
         val situationSellingButton = view.findViewById<RadioButton>(R.id.product_edit_situation_checkbox_selling)
         val situationSoldButton = view.findViewById<RadioButton>(R.id.product_edit_situation_checkbox_sold)
@@ -132,7 +135,6 @@ class ProductEditFragment : Fragment() {
         }
     }
 
-
     private fun editCompleteButton(view: View, board: BoardModel) {
         view.findViewById<Button>(R.id.product_edit_complete_button).setOnClickListener() {
             val content =
@@ -143,7 +145,7 @@ class ProductEditFragment : Fragment() {
             val title =
                 view.findViewById<EditText>(R.id.product_edit_title_edittext).text.toString()
 
-            //데이터 검증
+            // 데이터 검증
             if (price == null) {
                 Toast.makeText(requireContext(), "가격을 입력하세요", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -155,7 +157,7 @@ class ProductEditFragment : Fragment() {
                 } else if (!productEditUiState.isContentValid()) {
                     Toast.makeText(requireContext(), "내용을 입력해주세요", Toast.LENGTH_SHORT).show()
                 } else {
-                    //라디오 그룹 버튼에 따라서 false줄지 true줄지 변경
+                    // 라디오 그룹 버튼에 따라서 false줄지 true줄지 변경
                     val radioSoldGroup = view.findViewById<RadioGroup>(R.id.product_edit_situation_radiogroup)
                     val sold = when (radioSoldGroup.checkedRadioButtonId) {
                         R.id.product_edit_situation_checkbox_selling -> false
@@ -166,10 +168,7 @@ class ProductEditFragment : Fragment() {
                     boardViewModel.updateBoard(board.uuid, BoardModel(board.uuid, content, board.createdAt, board.pictures, price, sold, title, board.userId, board.userName)
                     ) { isSuccess ->
                         if (isSuccess) moveDetailFragment()
-                        else Toast.makeText(
-                            requireContext(),
-                            "내용 수정 실패, 내용을 다시 수정해주세요",
-                            Toast.LENGTH_SHORT
+                        else Toast.makeText(requireContext(), "내용 수정 실패, 내용을 다시 수정해주세요", Toast.LENGTH_SHORT
                         ).show()
                     }
                 }
@@ -185,58 +184,4 @@ class ProductEditFragment : Fragment() {
         transaction.addToBackStack(null)
         transaction.commit()
     }
-/*
-    //이미지 업로드 관련 버튼
-    private fun addIamgeButton(view: View) {
-        val addImageButton = view.findViewById<LinearLayout>(R.id.product_edit_add_image_button)
-        addImageButton.setOnClickListener {
-            // 갤러리 열기
-            openGalleryForImage()
-        }
-
-    }
-
-    //이미지 관련
-    private fun openGalleryForImage() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        imagePickerLauncher.launch(intent)
-    }
-
-    //이미지 관련 메서드
-    private val imagePickerLauncher =
-        registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val data: Intent? = result.data
-                data?.data?.let { uri ->
-                    // URI에서 실제 파일 경로 가져오기
-                    val selectedImageFile = createImageFile()
-                    requireContext().contentResolver.openInputStream(uri)?.use { input ->
-                        selectedImageFile.outputStream().use { output ->
-                            input.copyTo(output)
-                        }
-                    }
-
-                    // 리스트에 파일 추가
-                    pictures.add(selectedImageFile)
-                }
-            }
-        }
-
-    @Throws(IOException::class)
-    private fun createImageFile(): File {
-        // 이미지 파일 이름 생성
-        val timeStamp: String =
-            SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-        val imageFileName = "JPEG_$timeStamp"
-        val storageDir: File? = context?.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        return File.createTempFile(
-            imageFileName,  /* 파일명 */
-            ".jpg",         /* 확장자 */
-            storageDir      /* 저장 디렉토리 */
-        )
-    }
-
- */
 }

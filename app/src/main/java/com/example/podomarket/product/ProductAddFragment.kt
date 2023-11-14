@@ -40,28 +40,29 @@ class ProductAddFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_product_add, container, false)
         // 나가기 버튼 구현
-        selectExitButton(view)
+        addExitButton(view)
 
-        // 판매 타입 라디오 그룹
-        selectSellTypeRadioButton(view)
+        // 판매 타입 선택 라디오 버튼
+        addSelectSellTypeRadioButton(view)
 
         // 이미지 추가 버튼
-        addIamgeButton(view)
+        addImageButton(view)
 
-        //판매 물품 등록
+        // 판매 물품 등록
         addProductButton(view)
 
         return view
     }
 
-    private fun selectExitButton(view:View){
+    private fun addExitButton(view:View){
         val exitIcon = view.findViewById<ImageView>(R.id.exit_icon)
         exitIcon.setOnClickListener {
             val fragmentManager = requireActivity().supportFragmentManager
             fragmentManager.popBackStack()
         }
     }
-    private fun selectSellTypeRadioButton(view:View){
+
+    private fun addSelectSellTypeRadioButton(view:View){
         val radioGroup = view.findViewById<RadioGroup>(R.id.product_sell_radiogroup)
         // 다른 라디오 버튼 선택 시
         radioGroup.setOnCheckedChangeListener { group, checkedId ->
@@ -99,7 +100,7 @@ class ProductAddFragment : Fragment() {
             val title = view.findViewById<EditText>(R.id.product_sell_title_edittext).text.toString()
             val userId: String? = authViewModel.getCurrentUserUid()
 
-            //데이터 검증
+            // 데이터 검증
             if (userId == null) {
                 Toast.makeText(requireContext(), "유효하지 않은 유저입니다", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -107,7 +108,7 @@ class ProductAddFragment : Fragment() {
                 Toast.makeText(requireContext(), "가격을 입력하세요", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             } else {
-                //content, pictures, title 유효성 검사
+                // content, pictures, title 유효성 검사
                 val productAddUiState = ProductAddUiState(content, pictures, title)
                 if (!productAddUiState.isTitleValid()) {
                     Toast.makeText(requireContext(), "제목을 입력하세요", Toast.LENGTH_SHORT).show()
@@ -119,13 +120,13 @@ class ProductAddFragment : Fragment() {
                     val createdAt = Timestamp(Date())
                     val sold = false
                     var userName = ""
-                    //비동기문제때문에 괄호위치 아래처럼 해야함
+                    // 비동기문제때문에 괄호위치 아래처럼 해야함
                     authViewModel.getUser(userId) { email, name ->
                         userName = name
 
                         Toast.makeText(requireContext(), "userName: $userName", Toast.LENGTH_SHORT)
 
-                        //검증 통과후 판매글 업로드(addBoard함수가 suspend처리되어있어 코루틴 내에서 호출해야한다)
+                        // 검증 통과후 판매글 업로드(addBoard함수가 suspend처리되어있어 코루틴 내에서 호출해야한다)
                         CoroutineScope(Dispatchers.Main).launch {
                             boardViewModel.addBoard(content, createdAt, pictures, price, sold, title, userId, userName
                             ) { isSuceess ->
@@ -147,7 +148,7 @@ class ProductAddFragment : Fragment() {
         transaction.commit()
     }
 
-    private fun addIamgeButton(view: View){
+    private fun addImageButton(view: View){
         val addImageButton = view.findViewById<LinearLayout>(R.id.product_sell_add_image_button)
         addImageButton.setOnClickListener {
             // 갤러리 열기
@@ -155,7 +156,8 @@ class ProductAddFragment : Fragment() {
         }
 
     }
-    //이미지 관련
+
+    // 이미지 관련
     private fun openGalleryForImage() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         intent.type = "image/*"
@@ -205,7 +207,6 @@ class ProductAddFragment : Fragment() {
         // 리스트에 파일 추가
         pictures.add(selectedImageFile)
     }
-
 
     @Throws(IOException::class)
     private fun createImageFile(): File {

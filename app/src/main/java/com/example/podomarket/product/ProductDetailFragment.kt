@@ -1,37 +1,26 @@
 package com.example.podomarket.product
 
-import android.animation.Animator
-import android.animation.ObjectAnimator
-import android.graphics.Point
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
-import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.example.podomarket.R
 import com.example.podomarket.common.DraggableFragment
 import com.example.podomarket.model.BoardModel
 import com.example.podomarket.viewmodel.AuthViewModel
 import com.example.podomarket.viewmodel.BoardViewModel
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.Timestamp
 
 // 제품 상세 페이지
 class ProductDetailFragment : DraggableFragment() {
     private val boardViewModel = BoardViewModel()
     private val authViewModel = AuthViewModel()
+
     companion object {
         private const val ARG_BOARD_UUID = "arg_board_uuid"
 
@@ -47,21 +36,14 @@ class ProductDetailFragment : DraggableFragment() {
         val view = inflater.inflate(R.layout.fragment_product_detail, container, false)
         val boardUuid = arguments?.getString(ARG_BOARD_UUID)
 
-        // 채팅 버튼 구현
-        val chatButton = view.findViewById<CardView>(R.id.chat_button)
-        // 채팅 버튼 클릭시 -> 채팅방 화면 프래그먼트 실행 및 이동
-        chatButton.setOnClickListener {
-            val chatRoomFragment = ChatRoomFragment()
-            val transaction = parentFragmentManager.beginTransaction()
-            transaction.add(R.id.fragment_container, chatRoomFragment)
-            transaction.addToBackStack(null)
-            transaction.commit()
-        }
-        // 더보기 버튼 구현
-        val moreButton = view.findViewById<ImageView>(R.id.more_button)
-        // 더보기 버튼 클릭 시 나타나는 메뉴 구현용
+        // 채팅 버튼
+        moveChatFragmentButton(view)
+
+        // 더보기 버튼, 클릭시 나오는 메뉴 구현
+       val moreButton = view.findViewById<ImageView>(R.id.more_button)
         var overlayView = view.findViewById<View>(R.id.overlay_view)
         val productMenu = view.findViewById<CardView>(R.id.product_menu)
+
         // 더보기 버튼 클릭 -> 메뉴 버튼, 바깥 레이아웃을 출력
         moreButton.setOnClickListener {
             productMenu.visibility = View.VISIBLE
@@ -69,14 +51,16 @@ class ProductDetailFragment : DraggableFragment() {
             // 메뉴 버튼을 가장 앞으로 가져옴
             productMenu.bringToFront()
         }
+
         // 바깥 레이아웃을 클릭 시 -> 바깥 레이아웃과 메뉴 버튼 사라짐
         overlayView.setOnClickListener {
             productMenu.visibility = View.GONE
             overlayView.visibility = View.GONE
         }
+
         // 메뉴 버튼 클릭 시 -> 메뉴 버튼과 바깥 레이아웃 사라지고, 게시글 수정 프래그먼트로 이동
         productMenu.setOnClickListener{
-            //게시물 올린 유저uuid와 현재 uuid가 동일할시 수정 가능
+            // 게시물 올린 유저uuid와 현재 uuid가 동일할시 수정 가능
             val currentUser = authViewModel.getCurrentUserUid()
             boardUuid?.let { uuid ->
                 boardViewModel.getBoard(uuid) { board ->
@@ -98,17 +82,9 @@ class ProductDetailFragment : DraggableFragment() {
                 }
             }
         }
+
         // 뒤로가기 버튼 구현
-        val backButton = view.findViewById<ImageView>(R.id.back_button)
-        backButton.setOnClickListener {
-            val transaction = parentFragmentManager.beginTransaction()
-            transaction.setCustomAnimations(
-                0,
-                R.anim.exit_to_right
-            )
-            transaction.remove(this@ProductDetailFragment)
-            transaction.commit()
-        }
+        moveBackFragment(view)
 
         // Board 정보를 가져와서 UI에 표시
         boardUuid?.let { uuid ->
@@ -120,13 +96,38 @@ class ProductDetailFragment : DraggableFragment() {
         return view
     }
 
+    private fun moveChatFragmentButton(view:View){
+        val chatButton = view.findViewById<CardView>(R.id.chat_button)
+        // 채팅 버튼 클릭시 -> 채팅방 화면 프래그먼트 실행 및 이동
+        chatButton.setOnClickListener {
+            val chatRoomFragment = ChatRoomFragment()
+            val transaction = parentFragmentManager.beginTransaction()
+            transaction.add(R.id.fragment_container, chatRoomFragment)
+            transaction.addToBackStack(null)
+            transaction.commit()
+        }
+    }
+
+    private fun moveBackFragment(view:View){
+        val backButton = view.findViewById<ImageView>(R.id.back_button)
+        backButton.setOnClickListener {
+            val transaction = parentFragmentManager.beginTransaction()
+            transaction.setCustomAnimations(
+                0,
+                R.anim.exit_to_right
+            )
+            transaction.remove(this@ProductDetailFragment)
+            transaction.commit()
+        }
+    }
+
     private fun displayBoardInfo(view: View, board: BoardModel) {
         // 대표 이미지 표시
         val representativeImage = view.findViewById<ImageView>(R.id.detail_product_image)
 
         val firstImageUrl = board.pictures.firstOrNull()
 
-        //Glide를 통해 이미지 업로드
+        // Glide를 통해 이미지 업로드
         firstImageUrl?.let { imageUrl ->
             Glide.with(view.context)
                 .load(imageUrl)
