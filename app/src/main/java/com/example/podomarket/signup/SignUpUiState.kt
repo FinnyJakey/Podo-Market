@@ -14,6 +14,9 @@ class SignUpUiState(
     val isInputValid: Boolean
         get() = isEmailValid && isPasswordValid && isRepasswordValid && isNameValid && isBirthValid
 
+    val isInputEmpty: Boolean
+        get() = email.isEmpty() || password.isEmpty() || repassword.isEmpty() || name.isEmpty() || birth.isEmpty()
+
     private val isEmailValid: Boolean
         get() {
             return if (email.isEmpty()) {

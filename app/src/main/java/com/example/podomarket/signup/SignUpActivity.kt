@@ -39,11 +39,7 @@ class SignUpActivity: AppCompatActivity() {
             val createRepassword = findViewById<EditText>(R.id.create_account_repassword)?.text.toString()
             val createBirth = findViewById<EditText>(R.id.create_account_birth)?.text.toString()
             if(isSignUpInputValid(createEmail, createPassword,createRepassword, createName, createBirth)){
-                //birth를 timeStamp형식으로 바꿔야함 아니면 위에서 바꾸면 됨
                 doSignUp(createEmail, createPassword, createName, makeTimeStamp(createBirth))
-            }
-            else {
-                displayLoginError(SignUpErrorMessages.MISSING_FIELDS)
             }
         }
     }
@@ -69,7 +65,10 @@ class SignUpActivity: AppCompatActivity() {
     //계정 생성 검증 메서드
     private fun isSignUpInputValid(email: String, password: String, repassword: String, name:String,  birth: String):Boolean{
         val signUpUiState = SignUpUiState(email, password, repassword, name, birth)
-        if (signUpUiState.showEmailError) {
+        if (signUpUiState.isInputEmpty){
+            displayLoginError(SignUpErrorMessages.MISSING_FIELDS)
+        }
+        else if (signUpUiState.showEmailError) {
             displayLoginError(SignUpErrorMessages.INVALID_EMAIL_FORMAT)
         } else if (signUpUiState.showPasswordError) {
             displayLoginError(SignUpErrorMessages.INVALID_PASSWORD_FORMAT)
