@@ -6,6 +6,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.podomarket.R
+import com.example.podomarket.common.CommonUtil
 import com.example.podomarket.model.BoardModel
 
 class ProductRecyclerViewAdapter(private var dataList: List<BoardModel>, private val itemClickListener: OnItemClickListener) : RecyclerView.Adapter<ProductRecyclerViewAdapter.MyViewHolder>() {
@@ -37,7 +38,7 @@ class ProductRecyclerViewAdapter(private var dataList: List<BoardModel>, private
         // 데이터를 ViewHolder에 바인딩
         holder.titleTextView.text = item.title
         holder.userNameTextView.text = item.userName
-        holder.priceTextView.text = "${item.price} 원"
+        holder.priceTextView.text = CommonUtil.priceToString(item.price)
 
         // Glide를 사용하여 이미지 표시
         Glide.with(holder.itemView.context)

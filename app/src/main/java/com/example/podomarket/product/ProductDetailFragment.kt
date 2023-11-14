@@ -6,10 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.cardview.widget.CardView
 import com.bumptech.glide.Glide
 import com.example.podomarket.R
+import com.example.podomarket.common.CommonUtil
 import com.example.podomarket.common.DraggableFragment
 import com.example.podomarket.model.BoardModel
 import com.example.podomarket.viewmodel.AuthViewModel
@@ -131,6 +131,8 @@ class ProductDetailFragment : DraggableFragment() {
                 .load(imageUrl)
                 .into(representativeImage)
         }
+        representativeImage.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+        representativeImage.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
 
         // 상품 제목, 판매자 이름, 가격, 몇 분전 게시물인지 표시
         val titleTextView = view.findViewById<TextView>(R.id.product_detail_title)
@@ -144,7 +146,7 @@ class ProductDetailFragment : DraggableFragment() {
         titleTextView.text = board.title
         timeAgoTextView.text = timeAgo
         contentTextView.text = board.content
-        priceTextView.text = "${board.price} 원"
+        priceTextView.text = CommonUtil.priceToString(board.price)
     }
 
     //게시물 올린시간 계산(1시간 미만시 분, 1일 미만시 시간, 이외에는 며칠인지 표시
@@ -155,9 +157,9 @@ class ProductDetailFragment : DraggableFragment() {
         val minutes = (timeDifferenceMillis / (1000 * 60)).toInt()
 
         return when {
-            minutes < 60 -> "$minutes 분 전"
-            minutes < 24 * 60 -> "${minutes / 60} 시간 전"
-            else -> "${minutes / (24 * 60)} 일 전"
+            minutes < 60 -> "${minutes}분 전"
+            minutes < 24 * 60 -> "${minutes / 60}시간 전"
+            else -> "${minutes / (24 * 60)}일 전"
         }
     }
 }
