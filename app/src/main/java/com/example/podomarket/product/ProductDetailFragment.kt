@@ -23,6 +23,7 @@ import com.bumptech.glide.Glide
 import com.example.podomarket.R
 import com.example.podomarket.common.DraggableFragment
 import com.example.podomarket.model.BoardModel
+import com.example.podomarket.viewmodel.AuthViewModel
 import com.example.podomarket.viewmodel.BoardViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.Timestamp
@@ -30,6 +31,7 @@ import com.google.firebase.Timestamp
 // 제품 상세 페이지
 class ProductDetailFragment : DraggableFragment() {
     private val boardViewModel = BoardViewModel()
+    private val authViewModel = AuthViewModel()
     companion object {
         private const val ARG_BOARD_UUID = "arg_board_uuid"
 
@@ -74,15 +76,26 @@ class ProductDetailFragment : DraggableFragment() {
         }
         // 메뉴 버튼 클릭 시 -> 메뉴 버튼과 바깥 레이아웃 사라지고, 게시글 수정 프래그먼트로 이동
         productMenu.setOnClickListener{
+            //게시물 올린 유저uuid와 현재 uuid가 동일할시 수정 가능
+            val currentUser = authViewModel.getCurrentUserUid()
             boardUuid?.let { uuid ->
-                // ProductEditFragment로 UUID를 전달하여 생성
-                val productEditFragment = ProductEditFragment.newInstance(uuid)
-                val transaction = parentFragmentManager.beginTransaction()
-                transaction.add(R.id.fragment_container, productEditFragment)
-                transaction.addToBackStack(null)
-                transaction.commit()
-                productMenu.visibility = View.GONE
-                overlayView.visibility = View.GONE
+                boardViewModel.getBoard(uuid) { board ->
+                    // 상품 정보 UI에 표시
+                    if(currentUser == board.userId){
+                        // ProductEditFragment로 UUID를 전달하여 생성
+
+                        val productEditFragment = ProductEditFragment.newInstance(uuid)
+                        val transaction = parentFragmentManager.beginTransaction()
+                        transaction.add(R.id.fragment_container, productEditFragment)
+                        transaction.addToBackStack(null)
+                        transaction.commit()
+                        productMenu.visibility = View.GONE
+                        overlayView.visibility = View.GONE
+                    }
+                    else{
+                        Toast.makeText(requireContext(), "게시물 수정 권한이 없습니다", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         }
         // 뒤로가기 버튼 구현

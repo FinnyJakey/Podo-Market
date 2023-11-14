@@ -164,6 +164,7 @@
                 android:layout_marginTop="12dp"
                 android:background="@drawable/border_background"
                 android:hint="￦ 가격을 입력해주세요."
+                android:inputType="number"
                 android:padding="12dp"
                 android:textColor="@color/text_01"
                 android:textColorHint="@color/text_03"

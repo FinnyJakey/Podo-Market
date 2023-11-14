@@ -101,7 +101,6 @@ class ProductEditFragment : Fragment() {
                 // 상품 정보 UI에 표시
                 displayBoardInfo(view, board)
                 editCompleteButton(view, board)
-
             }
         }
 
@@ -112,11 +111,27 @@ class ProductEditFragment : Fragment() {
         val titleTextView = view.findViewById<TextView>(R.id.product_edit_title_edittext)
         val priceTextView = view.findViewById<TextView>(R.id.product_edit_price_edit_text)
         val contentTextView = view.findViewById<TextView>(R.id.product_edit_detail_edit_text)
-
         titleTextView.text = board.title
         contentTextView.text = board.content
-        priceTextView.text = "${board.price} 원"
+        priceTextView.text = "${board.price}"
+        //sold상태에 따라서 버튼 클릭 상태 나타내기
+        showSoldButton(view, board)
     }
+
+    private fun showSoldButton(view: View, board: BoardModel){
+        val radioSoldGroup = view.findViewById<RadioGroup>(R.id.product_edit_situation_radiogroup)
+        val situationSellingButton = view.findViewById<RadioButton>(R.id.product_edit_situation_checkbox_selling)
+        val situationSoldButton = view.findViewById<RadioButton>(R.id.product_edit_situation_checkbox_sold)
+
+        if (board.sold) {
+            // 판매완료 상태인 경우 판매완료 버튼을 선택한 상태로 변경
+            radioSoldGroup.check(situationSoldButton.id)
+        } else {
+            // 판매중 상태인 경우 판매중 버튼을 선택한 상태로 변경
+            radioSoldGroup.check(situationSellingButton.id)
+        }
+    }
+
 
     private fun editCompleteButton(view: View, board: BoardModel) {
         view.findViewById<Button>(R.id.product_edit_complete_button).setOnClickListener() {
@@ -133,20 +148,22 @@ class ProductEditFragment : Fragment() {
                 Toast.makeText(requireContext(), "가격을 입력하세요", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             } else {
-                //content, pictures, title 유효성 검사
-                val productAddUiState = ProductAddUiState(content, pictures, title)
-                if (!productAddUiState.isTitleValid()) {
+                //content, title 유효성 검사
+                val productEditUiState = ProductEditUiState(content, title)
+                if (!productEditUiState.isTitleValid()) {
                     Toast.makeText(requireContext(), "제목을 입력하세요", Toast.LENGTH_SHORT).show()
-                } else if (!productAddUiState.isPicturesValid()) {
-                    Toast.makeText(requireContext(), "사진을 첨부해주세요", Toast.LENGTH_SHORT).show()
-                } else if (!productAddUiState.isContentValid()) {
+                } else if (!productEditUiState.isContentValid()) {
                     Toast.makeText(requireContext(), "내용을 입력해주세요", Toast.LENGTH_SHORT).show()
                 } else {
                     //라디오 그룹 버튼에 따라서 false줄지 true줄지 변경
-                    val sold = false
-
+                    val radioSoldGroup = view.findViewById<RadioGroup>(R.id.product_edit_situation_radiogroup)
+                    val sold = when (radioSoldGroup.checkedRadioButtonId) {
+                        R.id.product_edit_situation_checkbox_selling -> false
+                        R.id.product_edit_situation_checkbox_sold -> true
+                        else -> false
+                    }
                     // 검증 통과 후 판매글 업로드
-                    boardViewModel.updateBoard(board.uuid, BoardModel(board.uuid, content, board.createdAt, pictures, price, sold, title, board.userId, board.userName)
+                    boardViewModel.updateBoard(board.uuid, BoardModel(board.uuid, content, board.createdAt, board.pictures, price, sold, title, board.userId, board.userName)
                     ) { isSuccess ->
                         if (isSuccess) moveDetailFragment()
                         else Toast.makeText(
@@ -168,7 +185,8 @@ class ProductEditFragment : Fragment() {
         transaction.addToBackStack(null)
         transaction.commit()
     }
-
+/*
+    //이미지 업로드 관련 버튼
     private fun addIamgeButton(view: View) {
         val addImageButton = view.findViewById<LinearLayout>(R.id.product_edit_add_image_button)
         addImageButton.setOnClickListener {
@@ -219,4 +237,6 @@ class ProductEditFragment : Fragment() {
             storageDir      /* 저장 디렉토리 */
         )
     }
+
+ */
 }
