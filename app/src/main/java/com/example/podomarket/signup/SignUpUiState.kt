@@ -1,8 +1,6 @@
 package com.example.podomarket.signup
 
 import java.util.*
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 class SignUpUiState(
     val email: String = "",

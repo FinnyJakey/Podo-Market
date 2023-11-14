@@ -13,6 +13,15 @@ class AuthViewModel : ViewModel() {
         return auth.currentUser?.uid
     }
 
+    fun getUserName(uuid: String, onGetUserNameComplete: (String) -> Unit) {
+        db.collection("User")
+            .document(uuid)
+            .get()
+            .addOnSuccessListener {
+                onGetUserNameComplete(it.data?.get("name").toString())
+            }
+    }
+
     fun getCurrentUser(onGetCurrentUserComplete: (email: String, name: String) -> Unit) {
         db.collection("User")
             .document(auth.currentUser?.uid.toString())
@@ -21,6 +30,7 @@ class AuthViewModel : ViewModel() {
                 onGetCurrentUserComplete(it.data?.get("email").toString(), it.data?.get("name").toString())
             }
     }
+
 
     fun getUser(uid: String, onGetUserComplete: (email: String, name: String) -> Unit) {
         db.collection("User")

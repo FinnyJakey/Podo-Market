@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
+
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -11,7 +12,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PodoMarket"
+        android:requestLegacyExternalStorage="true"
         tools:targetApi="31">
+
         <activity
             android:name=".MainActivity" />
         <activity
@@ -33,5 +36,7 @@
         </activity>
 
     </application>
-
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 </manifest>
