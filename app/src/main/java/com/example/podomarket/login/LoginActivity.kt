@@ -27,10 +27,6 @@ class LoginActivity : AppCompatActivity() {
             if (isLoginInputValid(loginEmail, loginPassword)) {
                 doLogin(loginEmail, loginPassword) //검증성공시 로그인실행
             }
-            else {
-                // 이메일 혹은 패스워드가 입력되지 않은 경우
-                displayLoginError(LoginErrorMessages.EMPTY_EMAIL_PASSWORD)
-            }
         }
 
         findViewById<TextView>(R.id.sign_up_button)?.setOnClickListener { moveAccountActivity() }
@@ -47,7 +43,10 @@ class LoginActivity : AppCompatActivity() {
     //로그인 검증
     private fun isLoginInputValid(email: String, password: String): Boolean {
         val loginUiState = LoginUiState(email, password)
-        if (loginUiState.showEmailError) {
+        if(loginUiState.isInputEmpty){
+            displayLoginError(LoginErrorMessages.EMPTY_EMAIL_PASSWORD)
+        }
+        else if (loginUiState.showEmailError) {
             // 이메일 형식이 잘못된 경우
             displayLoginError(LoginErrorMessages.INVALID_EMAIL_FORMAT)
         }

@@ -13,6 +13,9 @@ data class LoginUiState(
     val isInputValid: Boolean
         get() = isEmailValid && isPasswordValid
 
+    val isInputEmpty: Boolean
+        get() = email.isEmpty() || password.isEmpty()
+
     private val isEmailValid: Boolean
         get() {
             return if (email.isEmpty()) {

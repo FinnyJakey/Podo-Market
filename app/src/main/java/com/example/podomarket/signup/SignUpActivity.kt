@@ -6,7 +6,6 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.podomarket.MainActivity
 import com.example.podomarket.R
@@ -66,18 +65,18 @@ class SignUpActivity: AppCompatActivity() {
     private fun isSignUpInputValid(email: String, password: String, repassword: String, name:String,  birth: String):Boolean{
         val signUpUiState = SignUpUiState(email, password, repassword, name, birth)
         if (signUpUiState.isInputEmpty){
-            displayLoginError(SignUpErrorMessages.MISSING_FIELDS)
+            displaySignUpError(SignUpErrorMessages.MISSING_FIELDS)
         }
         else if (signUpUiState.showEmailError) {
-            displayLoginError(SignUpErrorMessages.INVALID_EMAIL_FORMAT)
+            displaySignUpError(SignUpErrorMessages.INVALID_EMAIL_FORMAT)
         } else if (signUpUiState.showPasswordError) {
-            displayLoginError(SignUpErrorMessages.INVALID_PASSWORD_FORMAT)
+            displaySignUpError(SignUpErrorMessages.INVALID_PASSWORD_FORMAT)
         } else if (signUpUiState.showRepasswordError) {
-            displayLoginError(SignUpErrorMessages.PASSWORD_MISMATCH)
+            displaySignUpError(SignUpErrorMessages.PASSWORD_MISMATCH)
         } else if (signUpUiState.showNameError) {
-            displayLoginError(SignUpErrorMessages.INVALID_NAME_FORMAT)
+            displaySignUpError(SignUpErrorMessages.INVALID_NAME_FORMAT)
         } else if (signUpUiState.showBirthError) {
-            displayLoginError(SignUpErrorMessages.INVALID_BIRTH_FORMAT)
+            displaySignUpError(SignUpErrorMessages.INVALID_BIRTH_FORMAT)
         }
         return signUpUiState.isInputValid
     }
@@ -100,7 +99,7 @@ class SignUpActivity: AppCompatActivity() {
         val authViewModel = AuthViewModel()
         authViewModel.signUp(email, password, name, birth) { isSuccess ->
             if (isSuccess)moveMainActivity()
-            else displayLoginError(SignUpErrorMessages.SIGN_UP_FAILED)
+            else displaySignUpError(SignUpErrorMessages.SIGN_UP_FAILED)
         }
     }
 
@@ -111,7 +110,7 @@ class SignUpActivity: AppCompatActivity() {
         finish()
     }
 
-    private fun displayLoginError(errorMessage: String){
+    private fun displaySignUpError(errorMessage: String){
         val errorTextview = findViewById<TextView>(R.id.sign_up_error_textview);
         errorTextview.text = errorMessage;
         errorTextview.visibility = View.VISIBLE;
