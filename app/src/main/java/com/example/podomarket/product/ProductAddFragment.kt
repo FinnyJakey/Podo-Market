@@ -18,6 +18,7 @@ import java.io.File
 import java.util.*
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.activity.result.contract.ActivityResultContracts
@@ -39,12 +40,28 @@ class ProductAddFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_product_add, container, false)
         // 나가기 버튼 구현
+        selectExitButton(view)
+
+        // 판매 타입 라디오 그룹
+        selectSellTypeRadioButton(view)
+
+        // 이미지 추가 버튼
+        addIamgeButton(view)
+
+        //판매 물품 등록
+        addProductButton(view)
+
+        return view
+    }
+
+    private fun selectExitButton(view:View){
         val exitIcon = view.findViewById<ImageView>(R.id.exit_icon)
         exitIcon.setOnClickListener {
             val fragmentManager = requireActivity().supportFragmentManager
             fragmentManager.popBackStack()
         }
-        // 판매 타입 선택용 라디오 그룹 구현
+    }
+    private fun selectSellTypeRadioButton(view:View){
         val radioGroup = view.findViewById<RadioGroup>(R.id.product_sell_radiogroup)
         // 다른 라디오 버튼 선택 시
         radioGroup.setOnCheckedChangeListener { group, checkedId ->
@@ -73,14 +90,6 @@ class ProductAddFragment : Fragment() {
                 priceEditText.isEnabled = true
             }
         }
-
-        // 이미지 추가 버튼
-        addIamgeButton(view)
-
-        //판매 물품 등록
-        addProductButton(view)
-
-        return view
     }
 
     private fun addProductButton(view:View){
@@ -149,30 +158,54 @@ class ProductAddFragment : Fragment() {
     //이미지 관련
     private fun openGalleryForImage() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        intent.type = "image/*"
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         imagePickerLauncher.launch(intent)
     }
 
-    //이미지 관련 메서드
     private val imagePickerLauncher =
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
+                pictures.clear()
                 val data: Intent? = result.data
-                data?.data?.let { uri ->
-                    // URI에서 실제 파일 경로 가져오기
-                    val selectedImageFile = createImageFile()
-                    requireContext().contentResolver.openInputStream(uri)?.use { input ->
-                        selectedImageFile.outputStream().use { output ->
-                            input.copyTo(output)
+                data?.let { intent ->
+                    if (intent.clipData != null) {
+                        // 여러 이미지 선택
+                        val clipData = intent.clipData!!
+                        val count = clipData!!.itemCount
+                        if(count > 10){
+                            Toast.makeText(requireContext(),"사진은 10장까지 선택 가능합니다.", Toast.LENGTH_SHORT).show()
                         }
+                        else{
+                            for (i in 0 until count) {
+                                val uri = clipData.getItemAt(i).uri
+                                saveImage(uri)
+                            }
+                        }
+                    } else if (intent.data != null) {
+                        // 하나의 이미지 선택
+                        val uri = intent.data!!
+                        saveImage(uri)
                     }
-
-                    // 리스트에 파일 추가
-                    pictures.add(selectedImageFile)
                 }
             }
         }
+
+    private fun saveImage(uri: Uri) {
+        // URI에서 실제 파일 경로 가져오기
+        val selectedImageFile = createImageFile()
+        requireContext().contentResolver.openInputStream(uri)?.use { input ->
+            selectedImageFile.outputStream().use { output ->
+                input.copyTo(output)
+            }
+        }
+
+        // 리스트에 파일 추가
+        pictures.add(selectedImageFile)
+    }
+
 
     @Throws(IOException::class)
     private fun createImageFile(): File {
