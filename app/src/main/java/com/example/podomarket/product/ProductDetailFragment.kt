@@ -43,6 +43,8 @@ class ProductDetailFragment : DraggableFragment() {
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_product_detail, container, false)
+        val boardUuid = arguments?.getString(ARG_BOARD_UUID)
+
         // 채팅 버튼 구현
         val chatButton = view.findViewById<CardView>(R.id.chat_button)
         // 채팅 버튼 클릭시 -> 채팅방 화면 프래그먼트 실행 및 이동
@@ -72,13 +74,16 @@ class ProductDetailFragment : DraggableFragment() {
         }
         // 메뉴 버튼 클릭 시 -> 메뉴 버튼과 바깥 레이아웃 사라지고, 게시글 수정 프래그먼트로 이동
         productMenu.setOnClickListener{
-            val productEditFragment = ProductEditFragment()
-            val transaction = parentFragmentManager.beginTransaction()
-            transaction.add(R.id.fragment_container, productEditFragment)
-            transaction.addToBackStack(null)
-            transaction.commit()
-            productMenu.visibility = View.GONE
-            overlayView.visibility = View.GONE
+            boardUuid?.let { uuid ->
+                // ProductEditFragment로 UUID를 전달하여 생성
+                val productEditFragment = ProductEditFragment.newInstance(uuid)
+                val transaction = parentFragmentManager.beginTransaction()
+                transaction.add(R.id.fragment_container, productEditFragment)
+                transaction.addToBackStack(null)
+                transaction.commit()
+                productMenu.visibility = View.GONE
+                overlayView.visibility = View.GONE
+            }
         }
         // 뒤로가기 버튼 구현
         val backButton = view.findViewById<ImageView>(R.id.back_button)
@@ -91,9 +96,6 @@ class ProductDetailFragment : DraggableFragment() {
             transaction.remove(this@ProductDetailFragment)
             transaction.commit()
         }
-        val boardUuid = arguments?.getString(ARG_BOARD_UUID)
-
-
 
         // Board 정보를 가져와서 UI에 표시
         boardUuid?.let { uuid ->

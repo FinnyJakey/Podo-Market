@@ -1,7 +1,6 @@
 package com.example.podomarket.model
 
 import com.google.firebase.Timestamp
-import java.io.File
 
 data class BoardModel(
     val uuid: String,

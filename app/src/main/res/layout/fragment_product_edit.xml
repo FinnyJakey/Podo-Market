@@ -50,139 +50,201 @@
         android:layout_marginTop="12dp"
         android:background="@color/hr_color"
         app:layout_constraintTop_toBottomOf="@+id/header" />
+
     <ScrollView
         android:id="@+id/product_edit_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/header_hr"
         app:layout_constraintBottom_toTopOf="@+id/product_edit_footer"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header_hr">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="12dp">
+
             <LinearLayout
                 android:id="@+id/product_edit_add_image_button"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:background="@drawable/border_background"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_camera"/>
+                    android:src="@drawable/ic_camera" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/text_02"
-                    android:text="0/10"/>
+                    android:text="0/10"
+                    android:textColor="@color/text_02" />
             </LinearLayout>
+
             <TextView
                 android:id="@+id/product_edit_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="제목"
-                android:textSize="14dp"
                 android:layout_marginTop="16dp"
+                android:text="제목"
                 android:textColor="@color/text_01"
-                app:layout_constraintTop_toBottomOf="@+id/product_edit_add_image_button"
-                app:layout_constraintStart_toStartOf="parent"/>
+                android:textSize="14dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/product_edit_add_image_button" />
+
             <EditText
                 android:id="@+id/product_edit_title_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:textColorHint="@color/text_03"
-                android:padding="12dp"
                 android:background="@drawable/border_background"
-                android:textSize="16dp"
                 android:hint="제목"
-                app:layout_constraintTop_toBottomOf="@+id/product_edit_title"
-                app:layout_constraintStart_toStartOf="parent"/>
+                android:padding="12dp"
+                android:textColor="@color/text_01"
+                android:textColorHint="@color/text_03"
+                android:textSize="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/product_edit_title" />
+
             <TextView
                 android:id="@+id/product_edit_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="거래 방식"
-                android:textSize="14dp"
                 android:textColor="@color/text_01"
-                app:layout_constraintTop_toBottomOf="@+id/product_edit_title_edittext"
-                app:layout_constraintStart_toStartOf="parent"/>
+                android:textSize="14dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/product_edit_title_edittext" />
+
             <RadioGroup
                 android:id="@+id/product_edit_radiogroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal"
-                app:layout_constraintTop_toBottomOf="@+id/product_edit_type"
-                app:layout_constraintStart_toStartOf="parent">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/product_edit_type">
 
                 <RadioButton
                     android:id="@+id/product_edit_type_checkbox_sell"
                     android:layout_width="75dp"
                     android:layout_height="35dp"
-                    android:gravity="center"
+                    android:background="@drawable/product_type_checkbox"
                     android:button="@null"
                     android:checked="true"
-                    android:background="@drawable/product_type_checkbox"
+                    android:gravity="center"
                     android:paddingBottom="1dp"
-                    android:textStyle="bold"
+                    android:text="판매하기"
                     android:textColor="@color/background"
-                    android:text="판매하기" />
+                    android:textStyle="bold" />
 
                 <RadioButton
                     android:id="@+id/product_edit_type_checkbox_share"
                     android:layout_width="75dp"
                     android:layout_height="37dp"
+                    android:layout_marginLeft="10dp"
                     android:background="@drawable/product_type_checkbox"
                     android:button="@null"
                     android:gravity="center"
                     android:paddingBottom="1dp"
-                    android:layout_marginLeft="10dp"
                     android:text="나눔하기"
                     android:textColor="@color/text_01" />
             </RadioGroup>
+
             <EditText
                 android:id="@+id/product_edit_price_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:textColorHint="@color/text_03"
-                android:padding="12dp"
                 android:background="@drawable/border_background"
-                android:textSize="16dp"
                 android:hint="￦ 가격을 입력해주세요."
-                app:layout_constraintTop_toBottomOf="@+id/product_edit_radiogroup"
-                app:layout_constraintStart_toStartOf="parent"/>
+                android:padding="12dp"
+                android:textColor="@color/text_01"
+                android:textColorHint="@color/text_03"
+                android:textSize="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/product_edit_radiogroup" />
+
             <TextView
                 android:id="@+id/product_edit_detail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="자세한 설명"
-                android:textSize="14dp"
                 android:textColor="@color/text_01"
-                app:layout_constraintTop_toBottomOf="@+id/product_edit_price_edit_text"
-                app:layout_constraintStart_toStartOf="parent"/>
+                android:textSize="14dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/product_edit_price_edit_text" />
+
             <EditText
                 android:id="@+id/product_edit_detail_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="170dp"
-                android:gravity="top"
-                android:textColorHint="@color/text_03"
-                android:background="@drawable/border_background"
                 android:layout_marginTop="10dp"
-                android:padding="12dp"
-                android:textSize="16dp"
+                android:background="@drawable/border_background"
+                android:gravity="top"
                 android:hint="게시글 내용을 작성해주세요.\n"
-                app:layout_constraintTop_toBottomOf="@+id/product_edit_detail"
-                app:layout_constraintStart_toStartOf="parent"/>
+                android:padding="12dp"
+                android:textColor="@color/text_01"
+                android:textColorHint="@color/text_03"
+                android:textSize="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/product_edit_detail" />
+
+            <TextView
+                android:id="@+id/product_edit_situation_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="거래 상태"
+                android:textColor="@color/text_01"
+                android:textSize="14dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/product_edit_detail_edit_text" />
+
+            <RadioGroup
+                android:id="@+id/product_edit_situation_radiogroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/product_edit_situation_type">
+
+                <RadioButton
+                    android:id="@+id/product_edit_situation_checkbox_selling"
+                    android:layout_width="75dp"
+                    android:layout_height="35dp"
+                    android:background="@drawable/product_type_checkbox"
+                    android:button="@null"
+                    android:checked="true"
+                    android:gravity="center"
+                    android:paddingBottom="1dp"
+                    android:text="판매중"
+                    android:textColor="@color/background"
+                    android:textStyle="bold" />
+
+                <RadioButton
+                    android:id="@+id/product_edit_situation_checkbox_sold"
+                    android:layout_width="75dp"
+                    android:layout_height="37dp"
+                    android:layout_marginLeft="10dp"
+                    android:background="@drawable/product_type_checkbox"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:paddingBottom="1dp"
+                    android:text="판매완료"
+                    android:textColor="@color/text_01" />
+            </RadioGroup>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
+
     <LinearLayout
         android:id="@+id/product_edit_footer"
         android:layout_width="match_parent"
@@ -191,19 +253,20 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:orientation="horizontal">
+
         <Button
+            android:id="@+id/product_edit_complete_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/button_background"
-            android:layout_marginBottom="20dp"
             android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
             android:layout_marginTop="10dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/button_background"
             android:paddingBottom="6dp"
             android:text="수정 완료"
             android:textSize="16dp"
-            android:textStyle="bold"
-            />
+            android:textStyle="bold" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

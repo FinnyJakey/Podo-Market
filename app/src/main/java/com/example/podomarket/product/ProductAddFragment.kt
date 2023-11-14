@@ -60,6 +60,18 @@ class ProductAddFragment : Fragment() {
                     radioButton.setTextColor(getResources().getColor(R.color.text_01))
                 }
             }
+            // 판매 타입이 product_sell_type_checkbox_share이면
+            if (checkedId == R.id.product_sell_type_checkbox_share) {
+                // 가격 입력란을 0으로 설정하고 편집 불가능하게 만듦
+                val priceEditText = view.findViewById<EditText>(R.id.product_sell_price_edit_text)
+                priceEditText.setText("0")
+                priceEditText.isEnabled = false
+            } else {
+                // 다른 경우에는 가격 입력란을 초기화하고 편집 가능하게 만듦
+                val priceEditText = view.findViewById<EditText>(R.id.product_sell_price_edit_text)
+                priceEditText.text.clear()
+                priceEditText.isEnabled = true
+            }
         }
 
         // 이미지 추가 버튼
