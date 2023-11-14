@@ -5,6 +5,7 @@
     <string name="action_sign_out">로그아웃</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_account_create">회원가입</string>
+    <string name="title_activity_splash">SplashActivity</string>
     <string name="action_create_account">계정 생성</string>
 
     <string name="prompt_email">이메일을 입력하세요</string>

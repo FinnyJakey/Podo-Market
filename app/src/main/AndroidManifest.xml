@@ -13,14 +13,7 @@
         android:theme="@style/Theme.PodoMarket"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:name=".MainActivity" />
         <activity
             android:name=".login.LoginActivity"
             android:label="@string/title_activity_login" />
@@ -28,6 +21,17 @@
             android:name=".signup.SignUpActivity"
             android:label="@string/title_activity_account_create"
             android:parentActivityName=".login.LoginActivity"/>
+        <activity android:name=".SplashActivity"
+            android:label="@string/title_activity_splash"
+            android:noHistory="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>
