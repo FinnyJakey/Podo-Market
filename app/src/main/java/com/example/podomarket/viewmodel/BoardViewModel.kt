@@ -121,48 +121,51 @@ class BoardViewModel : ViewModel() {
             }
     }
 
-    suspend fun updateBoard(board: BoardModel, newPictures: List<File> = emptyList(), onUpdateComplete: (Boolean) -> Unit) {
-        val newPicturesList = mutableListOf<String>()
+    fun updateBoard(board: BoardModel, newPictures: List<File> = emptyList(), onUpdateComplete: (Boolean) -> Unit) {
+        CoroutineScope(Dispatchers.Main).launch {
+            val newPicturesList = mutableListOf<String>()
 
-        for (picture in newPictures) {
-            val file = Uri.fromFile(picture)
-            val pictureRef = storageRef.child("${authViewModel.getCurrentUserUid()}/${Timestamp.now().nanoseconds}${file.lastPathSegment}")
-            val uploadTask = pictureRef.putFile(file)
-            uploadTask.continueWithTask { task ->
-                if (!task.isSuccessful) {
-                    task.exception?.let {
-                        throw it
+            for (picture in newPictures) {
+                val file = Uri.fromFile(picture)
+                val pictureRef = storageRef.child("${authViewModel.getCurrentUserUid()}/${Timestamp.now().nanoseconds}${file.lastPathSegment}")
+                val uploadTask = pictureRef.putFile(file)
+                uploadTask.continueWithTask { task ->
+                    if (!task.isSuccessful) {
+                        task.exception?.let {
+                            throw it
+                        }
                     }
+                    pictureRef.downloadUrl
+                }.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val downloadUri = task.result
+                        newPicturesList.add(downloadUri.toString())
+                    }
+                }.await()
+            }
+
+            boardCollection.document(board.uuid)
+                .update(
+                    hashMapOf(
+                        "content" to board.content,
+                        "created_at" to board.createdAt,
+                        "deleted" to false,
+                        "pictures" to board.pictures + newPicturesList,
+                        "price" to board.price,
+                        "sold" to board.sold,
+                        "title" to board.title,
+                        "user_id" to board.userId,
+                        "user_name" to board.userName,
+                    )
+                )
+                .addOnSuccessListener {
+                    onUpdateComplete(true)
                 }
-                pictureRef.downloadUrl
-            }.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val downloadUri = task.result
-                    newPicturesList.add(downloadUri.toString())
+                .addOnFailureListener {
+                    onUpdateComplete(false)
                 }
-            }.await()
         }
 
-        boardCollection.document(board.uuid)
-            .update(
-                hashMapOf(
-                    "content" to board.content,
-                    "created_at" to board.createdAt,
-                    "deleted" to false,
-                    "pictures" to board.pictures + newPicturesList,
-                    "price" to board.price,
-                    "sold" to board.sold,
-                    "title" to board.title,
-                    "user_id" to board.userId,
-                    "user_name" to board.userName,
-                )
-            )
-            .addOnSuccessListener {
-                onUpdateComplete(true)
-            }
-            .addOnFailureListener {
-                onUpdateComplete(false)
-            }
     }
 
     fun soldUpdate(boardId: String, sold: Boolean, onSoldUpdateComplete: (Boolean) -> Unit) {
