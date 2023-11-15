@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.util.*
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Environment
@@ -57,8 +58,21 @@ class ProductAddFragment : Fragment() {
     private fun addExitButton(view:View){
         val exitIcon = view.findViewById<ImageView>(R.id.exit_icon)
         exitIcon.setOnClickListener {
-            val fragmentManager = requireActivity().supportFragmentManager
-            fragmentManager.popBackStack()
+            if(!hasInput(view)){
+                val fragmentManager = requireActivity().supportFragmentManager
+                fragmentManager.popBackStack()
+                return@setOnClickListener
+            }
+            val alertDialog = AlertDialog.Builder(this.context)
+            alertDialog.setTitle("확인 메세지")
+            alertDialog.setMessage("페이지를 벗어나면 작성 중인 내용이 사라집니다.")
+            alertDialog.setPositiveButton("확인") { dialog, which ->
+                val fragmentManager = requireActivity().supportFragmentManager
+                fragmentManager.popBackStack()
+            }
+            alertDialog.setNegativeButton("취소") { dialog, which ->
+            }
+            alertDialog.show()
         }
     }
 
@@ -228,5 +242,12 @@ class ProductAddFragment : Fragment() {
             ".jpg",         /* 확장자 */
             storageDir      /* 저장 디렉토리 */
         )
+    }
+
+    private fun hasInput(view: View): Boolean {
+        val content = view.findViewById<EditText>(R.id.product_sell_detail_edit_text).text
+        val price = view.findViewById<EditText>(R.id.product_sell_price_edit_text).text
+        val title = view.findViewById<EditText>(R.id.product_sell_title_edittext).text
+        return content.isNotEmpty() || price.isNotEmpty() || title.isNotEmpty()
     }
 }
