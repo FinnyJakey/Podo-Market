@@ -121,11 +121,9 @@ class ProductAddFragment : Fragment() {
 //                    val sold = false
 //                    var userName = ""
 
-                    CoroutineScope(Dispatchers.Main).launch {
-                        boardViewModel.addBoard(content, createdAt, pictures, price, title) { isSuceess ->
-                            if (isSuceess) moveListFragment()
-                            else Toast.makeText(requireContext(), "업로드 실패, 내용을 추가 또는 수정해주세요", Toast.LENGTH_SHORT).show()
-                        }
+                    boardViewModel.addBoard(content, createdAt, pictures, price, title) { isSuceess ->
+                        if (isSuceess) moveListFragment()
+                        else Toast.makeText(requireContext(), "업로드 실패, 내용을 추가 또는 수정해주세요", Toast.LENGTH_SHORT).show()
                     }
 
 //                    // 비동기문제때문에 괄호위치 아래처럼 해야함

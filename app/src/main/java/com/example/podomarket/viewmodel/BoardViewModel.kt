@@ -9,6 +9,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.io.File
 
@@ -58,50 +61,53 @@ class BoardViewModel : ViewModel() {
         }
     }
 
-    suspend fun addBoard(content: String, createdAt: Timestamp, pictures: List<File>, price: Number, title: String, onAddComplete: (Boolean) -> Unit) {
-        val picturesList = mutableListOf<String>()
+    fun addBoard(content: String, createdAt: Timestamp, pictures: List<File>, price: Number, title: String, onAddComplete: (Boolean) -> Unit) {
+        CoroutineScope(Dispatchers.Main).launch {
+            val picturesList = mutableListOf<String>()
 
-        for (picture in pictures) {
-            val file = Uri.fromFile(picture)
-            val pictureRef = storageRef.child("${authViewModel.getCurrentUserUid()}/${Timestamp.now().nanoseconds}${file.lastPathSegment}")
-            val uploadTask = pictureRef.putFile(file)
-            uploadTask.continueWithTask { task ->
-                if (!task.isSuccessful) {
-                    task.exception?.let {
-                        throw it
+            for (picture in pictures) {
+                val file = Uri.fromFile(picture)
+                val pictureRef = storageRef.child("${authViewModel.getCurrentUserUid()}/${Timestamp.now().nanoseconds}${file.lastPathSegment}")
+                val uploadTask = pictureRef.putFile(file)
+                uploadTask.continueWithTask { task ->
+                    if (!task.isSuccessful) {
+                        task.exception?.let {
+                            throw it
+                        }
                     }
-                }
-                pictureRef.downloadUrl
-            }.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val downloadUri = task.result
-                    picturesList.add(downloadUri.toString())
-                }
-            }.await()
+                    pictureRef.downloadUrl
+                }.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val downloadUri = task.result
+                        picturesList.add(downloadUri.toString())
+                    }
+                }.await()
+            }
+
+            authViewModel.getCurrentUser { _, name, _ ->
+                boardCollection
+                    .add(
+                        hashMapOf(
+                            "content" to content,
+                            "created_at" to createdAt,
+                            "deleted" to false,
+                            "pictures" to picturesList,
+                            "price" to price,
+                            "sold" to false,
+                            "title" to title,
+                            "user_id" to authViewModel.getCurrentUserUid(),
+                            "user_name" to name,
+                        )
+                    )
+                    .addOnSuccessListener {
+                        onAddComplete(true)
+                    }
+                    .addOnFailureListener {
+                        onAddComplete(false)
+                    }
+            }
         }
 
-        authViewModel.getCurrentUser { _, name, _ ->
-            boardCollection
-                .add(
-                    hashMapOf(
-                        "content" to content,
-                        "created_at" to createdAt,
-                        "deleted" to false,
-                        "pictures" to picturesList,
-                        "price" to price,
-                        "sold" to false,
-                        "title" to title,
-                        "user_id" to authViewModel.getCurrentUserUid(),
-                        "user_name" to name,
-                    )
-                )
-                .addOnSuccessListener {
-                    onAddComplete(true)
-                }
-                .addOnFailureListener {
-                    onAddComplete(false)
-                }
-        }
     }
 
     fun deleteBoard(boardId: String, onDeleteComplete: (Boolean) -> Unit) {
