@@ -2,14 +2,12 @@ package com.example.podomarket.login
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isInvisible
 import com.example.podomarket.MainActivity
 import com.example.podomarket.R
 import com.example.podomarket.signup.SignUpActivity
@@ -20,16 +18,40 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        findViewById<Button>(R.id.login_button)?.setOnClickListener {
-            val loginEmail = findViewById<EditText>(R.id.login_email)?.text.toString()
-            val loginPassword = findViewById<EditText>(R.id.login_password)?.text.toString()
-            //로그인 Changes Commit Suggestion
-            if (isLoginInputValid(loginEmail, loginPassword)) {
-                doLogin(loginEmail, loginPassword) //검증성공시 로그인실행
-            }
-        }
+        //로그인 버튼
+        addLoginButton()
+
+        //엔터 클릭 이벤트
+        addLoginEnter()
 
         findViewById<TextView>(R.id.sign_up_button)?.setOnClickListener { moveAccountActivity() }
+    }
+
+    private fun addLoginButton(){
+        findViewById<Button>(R.id.login_button)?.setOnClickListener {
+            testLoginvalid()
+        }
+    }
+
+    private fun addLoginEnter(){
+        val loginPasswordEditText = findViewById<EditText>(R.id.login_password)
+        loginPasswordEditText.setOnKeyListener { _, keyCode, event ->
+            if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+                //엔터키 누르면 작동
+                testLoginvalid()
+                return@setOnKeyListener true
+            }
+            false
+        }
+    }
+
+    //함수화
+    private fun testLoginvalid(){
+        val loginEmail = findViewById<EditText>(R.id.login_email)?.text.toString()
+        val loginPassword = findViewById<EditText>(R.id.login_password)?.text.toString()
+        if (isLoginInputValid(loginEmail, loginPassword)) {
+            doLogin(loginEmail, loginPassword) //검증성공시 로그인실행
+        }
     }
 
     private fun doLogin(loginEmail: String, loginPassword: String){
