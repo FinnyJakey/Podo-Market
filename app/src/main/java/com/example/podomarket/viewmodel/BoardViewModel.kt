@@ -80,7 +80,7 @@ class BoardViewModel : ViewModel() {
             }.await()
         }
 
-        authViewModel.getCurrentUser { _, name ->
+        authViewModel.getCurrentUser { _, name, _ ->
             boardCollection
                 .add(
                     hashMapOf(

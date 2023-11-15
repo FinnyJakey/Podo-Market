@@ -22,12 +22,12 @@ class AuthViewModel : ViewModel() {
             }
     }
 
-    fun getCurrentUser(onGetCurrentUserComplete: (email: String, name: String) -> Unit) {
+    fun getCurrentUser(onGetCurrentUserComplete: (email: String, name: String, chats: List<String>) -> Unit) {
         db.collection("User")
             .document(auth.currentUser?.uid.toString())
             .get()
             .addOnSuccessListener {
-                onGetCurrentUserComplete(it.data?.get("email").toString(), it.data?.get("name").toString())
+                onGetCurrentUserComplete(it.data?.get("email").toString(), it.data?.get("name").toString(), it.data?.get("chats") as List<String>)
             }
     }
 
