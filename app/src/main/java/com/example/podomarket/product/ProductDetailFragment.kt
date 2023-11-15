@@ -6,10 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.cardview.widget.CardView
 import com.bumptech.glide.Glide
 import com.example.podomarket.R
+import com.example.podomarket.common.CommonUtil
 import com.example.podomarket.common.DraggableFragment
 import com.example.podomarket.model.BoardModel
 import com.example.podomarket.viewmodel.AuthViewModel
@@ -35,6 +35,7 @@ class ProductDetailFragment : DraggableFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_product_detail, container, false)
         val boardUuid = arguments?.getString(ARG_BOARD_UUID)
+        val currentUser = authViewModel.getCurrentUserUid()
 
         // 채팅 버튼
         moveChatFragmentButton(view)
@@ -61,24 +62,16 @@ class ProductDetailFragment : DraggableFragment() {
         // 메뉴 버튼 클릭 시 -> 메뉴 버튼과 바깥 레이아웃 사라지고, 게시글 수정 프래그먼트로 이동
         productMenu.setOnClickListener{
             // 게시물 올린 유저uuid와 현재 uuid가 동일할시 수정 가능
-            val currentUser = authViewModel.getCurrentUserUid()
             boardUuid?.let { uuid ->
                 boardViewModel.getBoard(uuid) { board ->
-                    // 상품 정보 UI에 표시
-                    if(currentUser == board.userId){
-                        // ProductEditFragment로 UUID를 전달하여 생성
-
-                        val productEditFragment = ProductEditFragment.newInstance(uuid)
-                        val transaction = parentFragmentManager.beginTransaction()
-                        transaction.add(R.id.fragment_container, productEditFragment)
-                        transaction.addToBackStack(null)
-                        transaction.commit()
-                        productMenu.visibility = View.GONE
-                        overlayView.visibility = View.GONE
-                    }
-                    else{
-                        Toast.makeText(requireContext(), "게시물 수정 권한이 없습니다", Toast.LENGTH_SHORT).show()
-                    }
+                    // ProductEditFragment로 UUID를 전달하여 생성
+                    val productEditFragment = ProductEditFragment.newInstance(uuid)
+                    val transaction = parentFragmentManager.beginTransaction()
+                    transaction.add(R.id.fragment_container, productEditFragment)
+                    transaction.addToBackStack(null)
+                    transaction.commit()
+                    productMenu.visibility = View.GONE
+                    overlayView.visibility = View.GONE
                 }
             }
         }
@@ -91,6 +84,11 @@ class ProductDetailFragment : DraggableFragment() {
             boardViewModel.getBoard(uuid) { board ->
                 // 상품 정보 UI에 표시
                 displayBoardInfo(view, board)
+                // 현재 로그인한 유저가 쓴 글이 아닐 경우
+                if(currentUser != board.userId){
+                    // 더보기 버튼 사라짐
+                    moreButton.visibility = View.GONE
+                }
             }
         }
         return view
@@ -133,6 +131,8 @@ class ProductDetailFragment : DraggableFragment() {
                 .load(imageUrl)
                 .into(representativeImage)
         }
+        representativeImage.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+        representativeImage.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
 
         // 상품 제목, 판매자 이름, 가격, 몇 분전 게시물인지 표시
         val titleTextView = view.findViewById<TextView>(R.id.product_detail_title)
@@ -146,7 +146,7 @@ class ProductDetailFragment : DraggableFragment() {
         titleTextView.text = board.title
         timeAgoTextView.text = timeAgo
         contentTextView.text = board.content
-        priceTextView.text = "${board.price} 원"
+        priceTextView.text = CommonUtil.priceToString(board.price)
     }
 
     //게시물 올린시간 계산(1시간 미만시 분, 1일 미만시 시간, 이외에는 며칠인지 표시
@@ -157,9 +157,9 @@ class ProductDetailFragment : DraggableFragment() {
         val minutes = (timeDifferenceMillis / (1000 * 60)).toInt()
 
         return when {
-            minutes < 60 -> "$minutes 분 전"
-            minutes < 24 * 60 -> "${minutes / 60} 시간 전"
-            else -> "${minutes / (24 * 60)} 일 전"
+            minutes < 60 -> "${minutes}분 전"
+            minutes < 24 * 60 -> "${minutes / 60}시간 전"
+            else -> "${minutes / (24 * 60)}일 전"
         }
     }
 }
