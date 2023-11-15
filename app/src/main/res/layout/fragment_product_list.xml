@@ -79,14 +79,15 @@
                 android:paddingTop="12dp"
                 android:paddingBottom="6dp"
                 android:orientation="horizontal">
+
                 <CheckBox
+                    android:id="@+id/sold_list_checkbox"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:layout_marginLeft="18dp"
                     android:layout_marginRight="6dp"
-                    android:button="@null"
                     android:background="@drawable/product_sold_checkbox"
-                    />
+                    android:button="@null" />
                 <TextView
                     android:layout_gravity="center"
                     android:layout_width="wrap_content"

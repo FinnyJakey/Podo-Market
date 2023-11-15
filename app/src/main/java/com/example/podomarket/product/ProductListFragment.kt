@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -43,6 +44,16 @@ class ProductListFragment : Fragment() {
 
         // 게시물 목록을 가져와서 업데이트
        boardViewModel.getAllBoards()
+
+        val soldListCheckbox = view.findViewById<CheckBox>(R.id.sold_list_checkbox)
+        soldListCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) { //체크시
+                boardViewModel.getAllBoards(true)
+            } else {
+                //체크 안되어 있을시
+                boardViewModel.getAllBoards()
+            }
+        }
 
         // 리사이클러뷰에 데이터 갱신
         boardViewModel.getBoardsLiveData().observe(viewLifecycleOwner, Observer { boards ->
