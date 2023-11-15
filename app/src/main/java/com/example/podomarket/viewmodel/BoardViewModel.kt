@@ -63,7 +63,7 @@ class BoardViewModel : ViewModel() {
 
         for (picture in pictures) {
             val file = Uri.fromFile(picture)
-            val pictureRef = storageRef.child("${authViewModel.getCurrentUserUid()}/${Timestamp.now().nanoseconds}${file.lastPathSegment}}")
+            val pictureRef = storageRef.child("${authViewModel.getCurrentUserUid()}/${Timestamp.now().nanoseconds}${file.lastPathSegment}")
             val uploadTask = pictureRef.putFile(file)
             uploadTask.continueWithTask { task ->
                 if (!task.isSuccessful) {
@@ -120,7 +120,7 @@ class BoardViewModel : ViewModel() {
 
         for (picture in newPictures) {
             val file = Uri.fromFile(picture)
-            val pictureRef = storageRef.child("${authViewModel.getCurrentUserUid()}/${Timestamp.now().nanoseconds}${file.lastPathSegment}}")
+            val pictureRef = storageRef.child("${authViewModel.getCurrentUserUid()}/${Timestamp.now().nanoseconds}${file.lastPathSegment}")
             val uploadTask = pictureRef.putFile(file)
             uploadTask.continueWithTask { task ->
                 if (!task.isSuccessful) {
