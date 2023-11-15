@@ -60,6 +60,7 @@ class AuthViewModel : ViewModel() {
                     .set(
                         hashMapOf(
                             "birth" to birth,
+                            "chats" to emptyList<String>(),
                             "name" to name,
                             "email" to email,
                         )
