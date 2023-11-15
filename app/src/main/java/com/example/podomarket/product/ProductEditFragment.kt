@@ -165,12 +165,12 @@ class ProductEditFragment : Fragment() {
                         else -> false
                     }
                     // 검증 통과 후 판매글 업로드
-                    boardViewModel.updateBoard(board.uuid, BoardModel(board.uuid, content, board.createdAt, board.pictures, price, sold, title, board.userId, board.userName)
-                    ) { isSuccess ->
-                        if (isSuccess) moveDetailFragment()
-                        else Toast.makeText(requireContext(), "내용 수정 실패, 내용을 다시 수정해주세요", Toast.LENGTH_SHORT
-                        ).show()
-                    }
+//                    boardViewModel.updateBoard(board.uuid, BoardModel(board.uuid, content, board.createdAt, board.pictures, price, sold, title, board.userId, board.userName)
+//                    ) { isSuccess ->
+//                        if (isSuccess) moveDetailFragment()
+//                        else Toast.makeText(requireContext(), "내용 수정 실패, 내용을 다시 수정해주세요", Toast.LENGTH_SHORT
+//                        ).show()
+//                    }
                 }
             }
         }
