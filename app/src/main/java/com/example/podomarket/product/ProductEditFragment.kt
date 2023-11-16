@@ -1,5 +1,6 @@
 package com.example.podomarket.product
 
+import android.app.AlertDialog
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,9 +11,13 @@ import androidx.fragment.app.Fragment
 import com.example.podomarket.R
 import com.example.podomarket.model.BoardModel
 import com.example.podomarket.viewmodel.BoardViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ProductEditFragment : Fragment() {
     private val boardViewModel = BoardViewModel()
+
     companion object {
         private const val ARG_BOARD_UUID = "arg_board_uuid"
 
@@ -28,9 +33,6 @@ class ProductEditFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_product_edit, container, false)
 
-        // 나가기 버튼
-        addExitIcon(view)
-
         // 판매 타입 선택 라디오 버튼
         addSelectSellTypeRadioGroup(view)
 
@@ -41,6 +43,8 @@ class ProductEditFragment : Fragment() {
         val boardUuid = arguments?.getString(ARG_BOARD_UUID)
         boardUuid?.let { uuid ->
             boardViewModel.getBoard(uuid) { board ->
+                // 나가기 버튼
+                addExitIcon(view,board)
                 // 상품 정보 데이터 레이아웃에 표시하는 함수
                 displayBoardInfo(view, board)
                 // 수정 완료 버튼 이벤트
@@ -50,11 +54,25 @@ class ProductEditFragment : Fragment() {
         return view
     }
 
-    private fun addExitIcon(view:View){
+    private fun addExitIcon(view:View, board: BoardModel){
         val exitIcon = view.findViewById<ImageView>(R.id.exit_icon)
         exitIcon.setOnClickListener {
-            val fragmentManager = requireActivity().supportFragmentManager
-            fragmentManager.popBackStack()
+            if(!hasChanges(view, board)){
+                val fragmentManager = requireActivity().supportFragmentManager
+                fragmentManager.popBackStack()
+                return@setOnClickListener
+            }
+            val alertDialog = AlertDialog.Builder(this.context)
+            alertDialog.setTitle("확인 메세지")
+            alertDialog.setMessage("페이지를 벗어나면 수정 중인 내용이 사라집니다.")
+            alertDialog.setPositiveButton("확인") { dialog, which ->
+                val fragmentManager = requireActivity().supportFragmentManager
+                fragmentManager.popBackStack()
+            }
+            alertDialog.setNegativeButton("취소") { dialog, which ->
+            }
+            alertDialog.show()
+
         }
     }
 
@@ -165,12 +183,15 @@ class ProductEditFragment : Fragment() {
                         else -> false
                     }
                     // 검증 통과 후 판매글 업로드
-//                    boardViewModel.updateBoard(board.uuid, BoardModel(board.uuid, content, board.createdAt, board.pictures, price, sold, title, board.userId, board.userName)
-//                    ) { isSuccess ->
-//                        if (isSuccess) moveDetailFragment()
-//                        else Toast.makeText(requireContext(), "내용 수정 실패, 내용을 다시 수정해주세요", Toast.LENGTH_SHORT
-//                        ).show()
-//                    }
+                    CoroutineScope(Dispatchers.Main).launch{
+                        boardViewModel.updateBoard(BoardModel(board.uuid, content, board.createdAt, board.pictures, price, sold, title, board.userId, board.userName),
+                            emptyList()
+                        ) { isSuccess ->
+                            if (isSuccess) moveDetailFragment()
+                            else Toast.makeText(requireContext(), "내용 수정 실패, 내용을 다시 수정해주세요", Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
                 }
             }
         }
@@ -183,5 +204,15 @@ class ProductEditFragment : Fragment() {
         transaction.replace(R.id.fragment_container, productListFragment)
         transaction.addToBackStack(null)
         transaction.commit()
+    }
+
+    private fun hasChanges(view: View, board: BoardModel): Boolean{
+        val content = view.findViewById<EditText>(R.id.product_edit_detail_edit_text).text.toString()
+        val price: Number? =
+            view.findViewById<EditText>(R.id.product_edit_price_edit_text).text.toString()
+                .toIntOrNull()
+        val title =
+            view.findViewById<EditText>(R.id.product_edit_title_edittext).text.toString()
+        return board.content != content || board.price.toDouble() != price?.toDouble() || board.title != title
     }
 }

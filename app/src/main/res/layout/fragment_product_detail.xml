@@ -129,7 +129,6 @@
                     android:textColor="@color/text_03"
                     android:text="20분 전"
                     android:textSize="12dp"
-                    android:layout_marginTop="2dp"
                     app:layout_constraintTop_toBottomOf="@+id/product_detail_title"
                     app:layout_constraintStart_toStartOf="@+id/product_detail_title"
                     />
@@ -138,7 +137,7 @@
                     android:id="@+id/product_detail_content"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="4dp"
                     android:text="봄에 구매했고 잘 안써서 판매해요 \n9만원에 구매했습니다."
                     android:textColor="@color/text_01"
                     android:textSize="16dp"
