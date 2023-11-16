@@ -2,23 +2,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
+import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.podomarket.R
-import com.example.podomarket.common.CommonUtil
-import com.example.podomarket.model.BoardModel
+import java.io.File
 
-class ThumbnailRecyclerViewAdapter(private var dataList: List<String>, private val itemClickListener: OnItemClickListener) : RecyclerView.Adapter<ThumbnailRecyclerViewAdapter.MyViewHolder>() {
+class ThumbnailRecyclerViewAdapter(private var stringList: List<String>, private var FileList: List<File>, private val itemClickListener: OnItemClickListener) : RecyclerView.Adapter<ThumbnailRecyclerViewAdapter.MyViewHolder>() {
 
     inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val productThumbnailImage: ImageView = itemView.findViewById(R.id.product_thumbnail_image)
-
+        val layout: ConstraintLayout = itemView.findViewById<ConstraintLayout>(R.id.product_thumbnail_layout)
+        val deleteButton: CardView = itemView.findViewById<CardView>(R.id.delete_button)
         init {
-            itemView.setOnClickListener {
+            deleteButton.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    itemClickListener.onItemClick(position)
+                    itemClickListener.onItemClick(position,stringList.size)
                 }
             }
         }
@@ -30,18 +31,27 @@ class ThumbnailRecyclerViewAdapter(private var dataList: List<String>, private v
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val item = dataList[position]
-
-        Glide.with(holder.itemView.context)
-            .load(item)
-            .into(holder.productThumbnailImage)
+        val stringListSize = stringList.size
+        if(position < stringListSize){
+            val item = stringList[position]
+            holder.deleteButton.bringToFront()
+            Glide.with(holder.itemView.context)
+                .load(item)
+                .into(holder.productThumbnailImage)
+        }else {
+            val item = FileList[position-stringListSize]
+            holder.deleteButton.bringToFront()
+            Glide.with(holder.itemView.context)
+                .load(item)
+                .into(holder.productThumbnailImage)
+        }
     }
 
     override fun getItemCount(): Int {
-        return dataList.size
+        return stringList.size + FileList.size
     }
 
     interface OnItemClickListener {
-        fun onItemClick(position: Int)
+        fun onItemClick(position: Int, stringListSize: Int)
     }
 }

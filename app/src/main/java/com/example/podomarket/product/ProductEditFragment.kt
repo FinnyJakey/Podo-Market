@@ -1,28 +1,50 @@
 package com.example.podomarket.product
 
-import android.app.AlertDialog
 import ThumbnailRecyclerViewAdapter
+import android.app.Activity
+import android.app.AlertDialog
+import android.content.Context
+import android.content.Intent
 import android.graphics.Typeface
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.os.Handler
+import android.provider.MediaStore
+import android.util.DisplayMetrics
+import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
+import androidx.lifecycle.findViewTreeViewModelStoreOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.podomarket.R
 import com.example.podomarket.model.BoardModel
 import com.example.podomarket.viewmodel.BoardViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import kotlin.properties.Delegates
+
 
 class ProductEditFragment : Fragment() {
     private val boardViewModel = BoardViewModel()
+    private lateinit var PictureNumTextView : TextView
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ThumbnailRecyclerViewAdapter
+    private var picturesStringList: MutableList<String> = mutableListOf()
+    private var picturesFileList: MutableList<File> = mutableListOf()
+    private var pictureNum by Delegates.notNull<Int>()
+    private var deviceWidth by Delegates.notNull<Int>()
+    private var isToastShowing = false
 
     companion object {
         private const val ARG_BOARD_UUID = "arg_board_uuid"
@@ -39,13 +61,19 @@ class ProductEditFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_product_edit, container, false)
 
+        deviceWidth = getDeviceWidth(this.requireContext())
+
         // 판매 타입 선택 라디오 버튼
         addSelectSellTypeRadioGroup(view)
 
         // 판매 완료 선택 라디오 버튼
         addSelectSoldRadioGroup(view)
 
+        // 사진 갯수 표시 텍스트 뷰
+        PictureNumTextView = view.findViewById(R.id.image_num)
 
+        // 이미지 추가 버튼
+        addImageButton(view)
         // Board 정보 가져와서 사용
         val boardUuid = arguments?.getString(ARG_BOARD_UUID)
         boardUuid?.let { uuid ->
@@ -82,7 +110,6 @@ class ProductEditFragment : Fragment() {
             alertDialog.setNegativeButton("취소") { dialog, which ->
             }
             alertDialog.show()
-
         }
     }
 
@@ -175,7 +202,10 @@ class ProductEditFragment : Fragment() {
 
             // 데이터 검증
             if (price == null) {
-                Toast.makeText(requireContext(), "가격을 입력하세요", Toast.LENGTH_SHORT).show()
+                showEditErrorToast("가격을 입력하세요")
+                return@setOnClickListener
+            } else if (picturesFileList.size + picturesStringList.size < 1){
+                showEditErrorToast("제품 사진을 1개 이상 등록 해야 합니다.")
                 return@setOnClickListener
             } else {
                 //content, title 유효성 검사
@@ -192,20 +222,94 @@ class ProductEditFragment : Fragment() {
                         R.id.product_edit_situation_checkbox_sold -> true
                         else -> false
                     }
-                    // 검증 통과 후 판매글 업로드
-                    CoroutineScope(Dispatchers.Main).launch{
-                        boardViewModel.updateBoard(BoardModel(board.uuid, content, board.createdAt, board.pictures, price, sold, title, board.userId, board.userName),
-                            emptyList()
-                        ) { isSuccess ->
-                            if (isSuccess) moveDetailFragment()
-                            else Toast.makeText(requireContext(), "내용 수정 실패, 내용을 다시 수정해주세요", Toast.LENGTH_SHORT
-                            ).show()
-                        }
+
+                    boardViewModel.updateBoard(BoardModel(board.uuid, content, board.createdAt, picturesStringList, price, sold, title, board.userId, board.userName),
+                        picturesFileList
+                    ) { isSuccess ->
+                        if (isSuccess) moveDetailFragment()
+                        else Toast.makeText(requireContext(), "내용 수정 실패, 내용을 다시 수정해주세요", Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }
         }
     }
+
+    private fun addImageButton(view: View){
+        val addImageButton = view.findViewById<LinearLayout>(R.id.product_edit_add_image_button)
+        addImageButton.setOnClickListener {
+            // 갤러리 열기
+            openGalleryForImage()
+        }
+    }
+
+    // 이미지 관련
+    private fun openGalleryForImage() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        intent.type = "image/*"
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        imagePickerLauncher.launch(intent)
+    }
+
+    private val imagePickerLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                picturesFileList.clear()
+                val data: Intent? = result.data
+                data?.let { intent ->
+                    if (intent.clipData != null) {
+                        // 여러 이미지 선택
+                        val clipData = intent.clipData!!
+                        val count = clipData!!.itemCount
+                        if(count > 10){
+                            Toast.makeText(requireContext(),"사진은 10장까지 선택 가능합니다.", Toast.LENGTH_SHORT).show()
+                        }
+                        else{
+                            for (i in 0 until count) {
+                                val uri = clipData.getItemAt(i).uri
+                                saveImage(uri)
+                            }
+                        }
+                    } else if (intent.data != null) {
+                        // 하나의 이미지 선택
+                        val uri = intent.data!!
+                        saveImage(uri)
+                    }
+                }
+            }
+        }
+
+    private fun saveImage(uri: Uri) {
+        // URI에서 실제 파일 경로 가져오기
+        val selectedImageFile = createImageFile()
+        requireContext().contentResolver.openInputStream(uri)?.use { input ->
+            selectedImageFile.outputStream().use { output ->
+                input.copyTo(output)
+            }
+        }
+
+        // 리스트에 파일 추가
+        picturesFileList.add(selectedImageFile)
+        updatePictureNum()
+        adapter.notifyDataSetChanged()
+    }
+
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        // 이미지 파일 이름 생성
+        val timeStamp: String =
+            SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val imageFileName = "JPEG_$timeStamp"
+        val storageDir: File? = context?.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            imageFileName,  /* 파일명 */
+            ".jpg",         /* 확장자 */
+            storageDir      /* 저장 디렉토리 */
+        )
+    }
+
 
     private fun moveDetailFragment() {
         val fragmentManager = requireActivity().supportFragmentManager
@@ -226,18 +330,68 @@ class ProductEditFragment : Fragment() {
             view.findViewById<EditText>(R.id.product_edit_title_edittext).text.toString()
         return board.content != content || board.price.toDouble() != price?.toDouble() || board.title != title
     }
+
     private fun setThumbnailArray(view:View, board: BoardModel){
-        val imageArray = board.pictures
-        adapter = ThumbnailRecyclerViewAdapter(imageArray, itemClickListener)
+        picturesStringList = board.pictures.toMutableList()
+        adapter = ThumbnailRecyclerViewAdapter(picturesStringList,picturesFileList, itemClickListener)
         recyclerView = view.findViewById(R.id.product_recyclerview)
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(context)
+        if (adapter != null && adapter.itemCount > 0) {
+            recyclerView.adapter = adapter
+            val linearLayoutManager =
+                LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
+            recyclerView.layoutManager = linearLayoutManager
+        }
+        updatePictureNum()
     }
 
     private val itemClickListener = object : ThumbnailRecyclerViewAdapter.OnItemClickListener {
-        override fun onItemClick(position: Int) {
+        override fun onItemClick(position: Int, stringListSize: Int) {
+            deleteImage(position,stringListSize)
+        }
+    }
 
+    private fun deleteImage(position: Int, stringListSize: Int){
+        if (position < stringListSize) {
+            picturesStringList.removeAt(position)
+        }
+        else {
+            picturesFileList.removeAt(position-stringListSize)
         }
 
+        updatePictureNum()
+        adapter.notifyDataSetChanged()
+    }
+
+    private fun updatePictureNum(){
+        pictureNum = picturesStringList.size + picturesFileList.size
+        PictureNumTextView.setText("${pictureNum}/10")
+        val num = (pictureNum -5) * 79 -24
+        val dp = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            num.toFloat(),
+            resources.displayMetrics
+        )
+        recyclerView.layoutParams.width = (deviceWidth + dp).toInt()
+    }
+
+    fun getDeviceWidth(context: Context): Int {
+        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        return displayMetrics.widthPixels
+    }
+
+    private fun showEditErrorToast(message:String){
+        if (isToastShowing) {
+            return
+        }
+        val toast = Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT)
+        // Toast가 사라지면 변수 초기화
+        val handler = Handler()
+        handler.postDelayed({
+            isToastShowing = false
+        }, 1000)  // 2000 밀리초(2초) 후에 실행
+        isToastShowing = true
+        toast.show()
     }
 }
