@@ -5,7 +5,8 @@ import com.google.firebase.Timestamp
 data class ChatRoomModel(
     val boardUuid: String,
     val chats: List<ChatModel>,
-    val participants: List<String>
+    val participants: List<String>,
+    val recentTime: Timestamp
 )
 
 data class ChatModel(
