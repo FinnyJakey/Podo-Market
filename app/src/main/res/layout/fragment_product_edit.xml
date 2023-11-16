@@ -63,28 +63,44 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="12dp">
-
-            <LinearLayout
-                android:id="@+id/product_edit_add_image_button"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:background="@drawable/border_background"
-                android:gravity="center"
-                android:orientation="vertical"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
+            <HorizontalScrollView
+                android:id="@+id/product_thumbnail_scrollview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_camera" />
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+                    <LinearLayout
+                        android:id="@+id/product_edit_add_image_button"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:background="@drawable/border_background"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:layout_marginRight="10dp">
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_camera" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0/10"
-                    android:textColor="@color/text_02" />
-            </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0/10"
+                            android:textColor="@color/text_02" />
+                    </LinearLayout>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/product_recyclerview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:scrollbars="none"
+                        />
+                </LinearLayout>
+            </HorizontalScrollView>
 
             <TextView
                 android:id="@+id/product_edit_title"
@@ -95,7 +111,7 @@
                 android:textColor="@color/text_01"
                 android:textSize="14dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/product_edit_add_image_button" />
+                app:layout_constraintTop_toBottomOf="@+id/product_thumbnail_scrollview" />
 
             <EditText
                 android:id="@+id/product_edit_title_edittext"

@@ -1,6 +1,7 @@
 package com.example.podomarket.product
 
 import android.app.AlertDialog
+import ThumbnailRecyclerViewAdapter
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.podomarket.R
 import com.example.podomarket.model.BoardModel
 import com.example.podomarket.viewmodel.BoardViewModel
@@ -17,6 +21,8 @@ import kotlinx.coroutines.launch
 
 class ProductEditFragment : Fragment() {
     private val boardViewModel = BoardViewModel()
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: ThumbnailRecyclerViewAdapter
 
     companion object {
         private const val ARG_BOARD_UUID = "arg_board_uuid"
@@ -39,6 +45,7 @@ class ProductEditFragment : Fragment() {
         // 판매 완료 선택 라디오 버튼
         addSelectSoldRadioGroup(view)
 
+
         // Board 정보 가져와서 사용
         val boardUuid = arguments?.getString(ARG_BOARD_UUID)
         boardUuid?.let { uuid ->
@@ -47,10 +54,13 @@ class ProductEditFragment : Fragment() {
                 addExitIcon(view,board)
                 // 상품 정보 데이터 레이아웃에 표시하는 함수
                 displayBoardInfo(view, board)
+                // 이미지 불러오는 함수
+                setThumbnailArray(view, board)
                 // 수정 완료 버튼 이벤트
                 editCompleteButton(view, board)
             }
         }
+
         return view
     }
 
@@ -206,6 +216,7 @@ class ProductEditFragment : Fragment() {
         transaction.commit()
     }
 
+
     private fun hasChanges(view: View, board: BoardModel): Boolean{
         val content = view.findViewById<EditText>(R.id.product_edit_detail_edit_text).text.toString()
         val price: Number? =
@@ -214,5 +225,19 @@ class ProductEditFragment : Fragment() {
         val title =
             view.findViewById<EditText>(R.id.product_edit_title_edittext).text.toString()
         return board.content != content || board.price.toDouble() != price?.toDouble() || board.title != title
+    }
+    private fun setThumbnailArray(view:View, board: BoardModel){
+        val imageArray = board.pictures
+        adapter = ThumbnailRecyclerViewAdapter(imageArray, itemClickListener)
+        recyclerView = view.findViewById(R.id.product_recyclerview)
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(context)
+    }
+
+    private val itemClickListener = object : ThumbnailRecyclerViewAdapter.OnItemClickListener {
+        override fun onItemClick(position: Int) {
+
+        }
+
     }
 }
