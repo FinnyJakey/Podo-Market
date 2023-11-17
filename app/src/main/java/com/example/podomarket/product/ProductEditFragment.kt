@@ -25,6 +25,7 @@ import androidx.lifecycle.findViewTreeViewModelStoreOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.podomarket.R
+import com.example.podomarket.common.CommonUtil
 import com.example.podomarket.model.BoardModel
 import com.example.podomarket.viewmodel.BoardViewModel
 import java.io.File
@@ -61,7 +62,7 @@ class ProductEditFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_product_edit, container, false)
 
-        deviceWidth = getDeviceWidth(this.requireContext())
+        deviceWidth = CommonUtil.getDeviceWidth(this.requireContext())
 
         // 판매 타입 선택 라디오 버튼
         addSelectSellTypeRadioGroup(view)
@@ -71,7 +72,7 @@ class ProductEditFragment : Fragment() {
 
         // 사진 갯수 표시 텍스트 뷰
         PictureNumTextView = view.findViewById(R.id.image_num)
-
+        recyclerView = view.findViewById(R.id.product_recyclerview)
         // 이미지 추가 버튼
         addImageButton(view)
         // Board 정보 가져와서 사용
@@ -256,22 +257,25 @@ class ProductEditFragment : Fragment() {
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                picturesFileList.clear()
                 val data: Intent? = result.data
                 data?.let { intent ->
                     if (intent.clipData != null) {
                         // 여러 이미지 선택
                         val clipData = intent.clipData!!
-                        val count = clipData!!.itemCount
+                        val count = clipData!!.itemCount + pictureNum
                         if(count > 10){
                             Toast.makeText(requireContext(),"사진은 10장까지 선택 가능합니다.", Toast.LENGTH_SHORT).show()
-                        }
-                        else{
-                            for (i in 0 until count) {
+                            for (i in 0 until 10-pictureNum) {
+                                val uri = clipData.getItemAt(i).uri
+                                saveImage(uri)
+                            }
+                        }else{
+                            for (i in 0 until clipData!!.itemCount) {
                                 val uri = clipData.getItemAt(i).uri
                                 saveImage(uri)
                             }
                         }
+
                     } else if (intent.data != null) {
                         // 하나의 이미지 선택
                         val uri = intent.data!!
@@ -374,12 +378,7 @@ class ProductEditFragment : Fragment() {
         recyclerView.layoutParams.width = (deviceWidth + dp).toInt()
     }
 
-    fun getDeviceWidth(context: Context): Int {
-        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val displayMetrics = DisplayMetrics()
-        windowManager.defaultDisplay.getMetrics(displayMetrics)
-        return displayMetrics.widthPixels
-    }
+
 
     private fun showEditErrorToast(message:String){
         if (isToastShowing) {
@@ -390,7 +389,7 @@ class ProductEditFragment : Fragment() {
         val handler = Handler()
         handler.postDelayed({
             isToastShowing = false
-        }, 1000)  // 2000 밀리초(2초) 후에 실행
+        }, 1000)
         isToastShowing = true
         toast.show()
     }

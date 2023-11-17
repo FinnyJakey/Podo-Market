@@ -1,5 +1,6 @@
 package com.example.podomarket.product
 
+import ThumbnailRecyclerViewAdapter
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,9 +12,6 @@ import com.example.podomarket.R
 import com.example.podomarket.viewmodel.AuthViewModel
 import com.example.podomarket.viewmodel.BoardViewModel
 import com.google.firebase.Timestamp
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.io.File
 import java.util.*
 import android.app.Activity
@@ -22,17 +20,26 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.TypedValue
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.podomarket.common.CommonUtil
 import java.io.IOException
 import java.text.SimpleDateFormat
+import kotlin.properties.Delegates
 
 
 // 판매글 추가 화면
 class ProductAddFragment : Fragment() {
     private val authViewModel = AuthViewModel()
     private val boardViewModel = BoardViewModel()
-
-    private val pictures: MutableList<File> = mutableListOf()
+    private lateinit var PictureNumTextView : TextView
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: ThumbnailRecyclerViewAdapter
+    private var picturesFileList: MutableList<File> = mutableListOf()
+    private var pictureNum by Delegates.notNull<Int>()
+    private var deviceWidth by Delegates.notNull<Int>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,6 +49,10 @@ class ProductAddFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_product_add, container, false)
         // 나가기 버튼 구현
         addExitButton(view)
+
+        deviceWidth = CommonUtil.getDeviceWidth(this.requireContext()) // 디바이스 가로 계산
+        PictureNumTextView = view.findViewById(R.id.image_num) // 이미지 개수 텍스트 뷰 호출
+        setRecyclerAdapter(view) //
 
         // 판매 타입 선택 라디오 버튼
         addSelectSellTypeRadioButton(view)
@@ -118,43 +129,24 @@ class ProductAddFragment : Fragment() {
             if (userId == null) {
                 Toast.makeText(requireContext(), "유효하지 않은 유저입니다", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
-            } else if (price == null) {
-                Toast.makeText(requireContext(), "가격을 입력하세요", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            } else {
+            }
+            else {
                 // content, pictures, title 유효성 검사
-                val productAddUiState = ProductAddUiState(content, pictures, title)
-                if (!productAddUiState.isTitleValid()) {
-                    Toast.makeText(requireContext(), "제목을 입력하세요", Toast.LENGTH_SHORT).show()
-                } else if (!productAddUiState.isPicturesValid()) {
+                val productAddUiState = ProductAddUiState(content, picturesFileList, title)
+                if (!productAddUiState.isPicturesValid()) {
                     Toast.makeText(requireContext(), "사진을 첨부해주세요", Toast.LENGTH_SHORT).show()
+                } else if (price == null) {
+                    Toast.makeText(requireContext(), "가격을 입력하세요", Toast.LENGTH_SHORT).show()
+                } else if (!productAddUiState.isTitleValid()) {
+                    Toast.makeText(requireContext(), "제목을 입력하세요", Toast.LENGTH_SHORT).show()
                 } else if (!productAddUiState.isContentValid()) {
                     Toast.makeText(requireContext(), "내용을 입력해주세요", Toast.LENGTH_SHORT).show()
                 } else {
                     val createdAt = Timestamp(Date())
-//                    val sold = false
-//                    var userName = ""
-
-                    boardViewModel.addBoard(content, createdAt, pictures, price, title) { isSuceess ->
+                    boardViewModel.addBoard(content, createdAt, picturesFileList, price, title) { isSuceess ->
                         if (isSuceess) moveListFragment()
                         else Toast.makeText(requireContext(), "업로드 실패, 내용을 추가 또는 수정해주세요", Toast.LENGTH_SHORT).show()
                     }
-
-//                    // 비동기문제때문에 괄호위치 아래처럼 해야함
-//                    authViewModel.getUser(userId) { email, name ->
-//                        userName = name
-//
-//                        Toast.makeText(requireContext(), "userName: $userName", Toast.LENGTH_SHORT)
-//
-//                        // 검증 통과후 판매글 업로드(addBoard함수가 suspend처리되어있어 코루틴 내에서 호출해야한다)
-//                        CoroutineScope(Dispatchers.Main).launch {
-//                            boardViewModel.addBoard(content, createdAt, pictures, price, sold, title, userId, userName
-//                            ) { isSuceess ->
-//                                if (isSuceess) moveListFragment()
-//                                else Toast.makeText(requireContext(), "업로드 실패, 내용을 추가 또는 수정해주세요", Toast.LENGTH_SHORT).show()
-//                            }
-//                        }
-//                    }
                 }
             }
         }
@@ -190,22 +182,25 @@ class ProductAddFragment : Fragment() {
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                pictures.clear()
                 val data: Intent? = result.data
                 data?.let { intent ->
                     if (intent.clipData != null) {
                         // 여러 이미지 선택
                         val clipData = intent.clipData!!
-                        val count = clipData!!.itemCount
+                        val count = clipData!!.itemCount + pictureNum
                         if(count > 10){
                             Toast.makeText(requireContext(),"사진은 10장까지 선택 가능합니다.", Toast.LENGTH_SHORT).show()
-                        }
-                        else{
-                            for (i in 0 until count) {
+                            for (i in 0 until 10-pictureNum) {
+                                val uri = clipData.getItemAt(i).uri
+                                saveImage(uri)
+                            }
+                        }else{
+                            for (i in 0 until clipData!!.itemCount) {
                                 val uri = clipData.getItemAt(i).uri
                                 saveImage(uri)
                             }
                         }
+
                     } else if (intent.data != null) {
                         // 하나의 이미지 선택
                         val uri = intent.data!!
@@ -225,7 +220,9 @@ class ProductAddFragment : Fragment() {
         }
 
         // 리스트에 파일 추가
-        pictures.add(selectedImageFile)
+        picturesFileList.add(selectedImageFile)
+        updatePictureNum()
+        adapter.notifyDataSetChanged()
     }
 
     @Throws(IOException::class)
@@ -247,5 +244,40 @@ class ProductAddFragment : Fragment() {
         val price = view.findViewById<EditText>(R.id.product_sell_price_edit_text).text
         val title = view.findViewById<EditText>(R.id.product_sell_title_edittext).text
         return content.isNotEmpty() || price.isNotEmpty() || title.isNotEmpty()
+    }
+
+    private fun setRecyclerAdapter(view:View){
+        adapter = ThumbnailRecyclerViewAdapter(emptyList(),picturesFileList, itemClickListener)
+        recyclerView = view.findViewById(R.id.product_recyclerview)
+        recyclerView.adapter = adapter
+        val linearLayoutManager =
+            LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
+        recyclerView.layoutManager = linearLayoutManager
+
+        updatePictureNum()
+    }
+
+    private val itemClickListener = object : ThumbnailRecyclerViewAdapter.OnItemClickListener {
+        override fun onItemClick(position: Int, stringListSize: Int) {
+            deleteImage(position,stringListSize)
+        }
+    }
+
+    private fun deleteImage(position: Int, stringListSize: Int){
+        picturesFileList.removeAt(position-stringListSize)
+        updatePictureNum()
+        adapter.notifyDataSetChanged()
+    }
+
+    private fun updatePictureNum(){
+        pictureNum = picturesFileList.size
+        PictureNumTextView.setText("${pictureNum}/10")
+        val num = (pictureNum -5) * 79 -24
+        val dp = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            num.toFloat(),
+            resources.displayMetrics
+        )
+        recyclerView.layoutParams.width = (deviceWidth + dp).toInt()
     }
 }
