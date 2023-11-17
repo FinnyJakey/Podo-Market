@@ -3,7 +3,6 @@ package com.example.podomarket.product
 import ThumbnailRecyclerViewAdapter
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
 import android.net.Uri
@@ -11,17 +10,13 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.provider.MediaStore
-import android.util.DisplayMetrics
-import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.findViewTreeViewModelStoreOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.podomarket.R
@@ -41,6 +36,8 @@ class ProductEditFragment : Fragment() {
     private lateinit var PictureNumTextView : TextView
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ThumbnailRecyclerViewAdapter
+    private lateinit var editButton : Button
+    private lateinit var loadingProgressBar: ProgressBar
     private var picturesStringList: MutableList<String> = mutableListOf()
     private var picturesFileList: MutableList<File> = mutableListOf()
     private var pictureNum by Delegates.notNull<Int>()
@@ -73,6 +70,8 @@ class ProductEditFragment : Fragment() {
         // 사진 갯수 표시 텍스트 뷰
         PictureNumTextView = view.findViewById(R.id.image_num)
         recyclerView = view.findViewById(R.id.product_recyclerview)
+        loadingProgressBar = view.findViewById(R.id.loading_progress_bar) // 로딩 화면 선언
+
         // 이미지 추가 버튼
         addImageButton(view)
         // Board 정보 가져와서 사용
@@ -192,7 +191,8 @@ class ProductEditFragment : Fragment() {
     }
 
     private fun editCompleteButton(view: View, board: BoardModel) {
-        view.findViewById<Button>(R.id.product_edit_complete_button).setOnClickListener() {
+        editButton = view.findViewById<Button>(R.id.product_edit_complete_button)
+        editButton.setOnClickListener {
             val content =
                 view.findViewById<EditText>(R.id.product_edit_detail_edit_text).text.toString()
             val price: Number? =
@@ -200,7 +200,7 @@ class ProductEditFragment : Fragment() {
                     .toIntOrNull()
             val title =
                 view.findViewById<EditText>(R.id.product_edit_title_edittext).text.toString()
-
+            showLoading()
             // 데이터 검증
             if (price == null) {
                 showEditErrorToast("가격을 입력하세요")
@@ -228,8 +228,8 @@ class ProductEditFragment : Fragment() {
                         picturesFileList
                     ) { isSuccess ->
                         if (isSuccess) moveDetailFragment()
-                        else Toast.makeText(requireContext(), "내용 수정 실패, 내용을 다시 수정해주세요", Toast.LENGTH_SHORT
-                        ).show()
+                        else Toast.makeText(requireContext(), "내용 수정 실패, 내용을 다시 수정해주세요", Toast.LENGTH_SHORT).show()
+                        hideLoading()
                     }
                 }
             }
@@ -392,5 +392,15 @@ class ProductEditFragment : Fragment() {
         }, 1000)
         isToastShowing = true
         toast.show()
+    }
+
+    private fun showLoading() {
+        editButton.isClickable = false
+        loadingProgressBar.visibility = View.VISIBLE
+    }
+
+    private fun hideLoading() {
+        editButton.isClickable = true
+        loadingProgressBar.visibility = View.GONE
     }
 }

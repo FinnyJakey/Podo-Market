@@ -37,10 +37,11 @@ class ProductAddFragment : Fragment() {
     private lateinit var PictureNumTextView : TextView
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ThumbnailRecyclerViewAdapter
+    private lateinit var loadingProgressBar: ProgressBar
+    private lateinit var enrollButton : Button
     private var picturesFileList: MutableList<File> = mutableListOf()
     private var pictureNum by Delegates.notNull<Int>()
     private var deviceWidth by Delegates.notNull<Int>()
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -51,8 +52,9 @@ class ProductAddFragment : Fragment() {
         addExitButton(view)
 
         deviceWidth = CommonUtil.getDeviceWidth(this.requireContext()) // 디바이스 가로 계산
-        PictureNumTextView = view.findViewById(R.id.image_num) // 이미지 개수 텍스트 뷰 호출
-        setRecyclerAdapter(view) //
+        PictureNumTextView = view.findViewById(R.id.image_num) // 이미지 개수 텍스트 뷰 선언
+        loadingProgressBar = view.findViewById(R.id.loading_progress_bar) // 로딩 화면 선언
+        setRecyclerAdapter(view) // 어댑터 세팅
 
         // 판매 타입 선택 라디오 버튼
         addSelectSellTypeRadioButton(view)
@@ -119,11 +121,13 @@ class ProductAddFragment : Fragment() {
     }
 
     private fun addProductButton(view:View){
-        view.findViewById<Button>(R.id.product_sell_enroll).setOnClickListener {
+        enrollButton = view.findViewById<Button>(R.id.product_sell_enroll)
+        enrollButton.setOnClickListener {
             val content = view.findViewById<EditText>(R.id.product_sell_detail_edit_text).text.toString()
             val price: Number? = view.findViewById<EditText>(R.id.product_sell_price_edit_text).text.toString().toIntOrNull()
             val title = view.findViewById<EditText>(R.id.product_sell_title_edittext).text.toString()
             val userId: String? = authViewModel.getCurrentUserUid()
+            showLoading()
 
             // 데이터 검증
             if (userId == null) {
@@ -146,6 +150,7 @@ class ProductAddFragment : Fragment() {
                     boardViewModel.addBoard(content, createdAt, picturesFileList, price, title) { isSuceess ->
                         if (isSuceess) moveListFragment()
                         else Toast.makeText(requireContext(), "업로드 실패, 내용을 추가 또는 수정해주세요", Toast.LENGTH_SHORT).show()
+                        hideLoading()
                     }
                 }
             }
@@ -279,5 +284,15 @@ class ProductAddFragment : Fragment() {
             resources.displayMetrics
         )
         recyclerView.layoutParams.width = (deviceWidth + dp).toInt()
+    }
+
+    private fun showLoading() {
+        enrollButton.isClickable = false
+        loadingProgressBar.visibility = View.VISIBLE
+    }
+
+    private fun hideLoading() {
+        enrollButton.isClickable = true
+        loadingProgressBar.visibility = View.GONE
     }
 }
