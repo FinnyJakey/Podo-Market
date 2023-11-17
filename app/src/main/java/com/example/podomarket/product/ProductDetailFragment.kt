@@ -6,7 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.cardview.widget.CardView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
 import com.example.podomarket.R
 import com.example.podomarket.common.CommonUtil
@@ -15,12 +19,16 @@ import com.example.podomarket.model.BoardModel
 import com.example.podomarket.viewmodel.AuthViewModel
 import com.example.podomarket.viewmodel.BoardViewModel
 import com.google.firebase.Timestamp
+import kotlin.properties.Delegates
 
 // 제품 상세 페이지
 class ProductDetailFragment : DraggableFragment() {
     private val boardViewModel = BoardViewModel()
     private val authViewModel = AuthViewModel()
-
+    private var totalPage by Delegates.notNull<Int>()
+    private var currentPage by Delegates.notNull<Int>()
+    private lateinit var pageRecyclerView: RecyclerView
+    private lateinit var pageAdapter: ProductDisplayPageAdapter
     companion object {
         private const val ARG_BOARD_UUID = "arg_board_uuid"
 
@@ -120,19 +128,30 @@ class ProductDetailFragment : DraggableFragment() {
     }
 
     private fun displayBoardInfo(view: View, board: BoardModel) {
-        // 대표 이미지 표시
-        val representativeImage = view.findViewById<ImageView>(R.id.detail_product_image)
 
-        val firstImageUrl = board.pictures.firstOrNull()
+        val viewPager: ViewPager = view.findViewById(R.id.viewPager)
+        val adapter = ProductImagePagerAdapter(view.context, board.pictures)
+        totalPage = board.pictures.size
+        currentPage = 0
+        viewPager.adapter = adapter
+        viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+            }
 
-        // Glide를 통해 이미지 업로드
-        firstImageUrl?.let { imageUrl ->
-            Glide.with(view.context)
-                .load(imageUrl)
-                .into(representativeImage)
-        }
-        representativeImage.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
-        representativeImage.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+            override fun onPageSelected(position: Int) {
+                pageAdapter.updatePageImage(position)
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {
+            }
+        })
+
+        pageAdapter = ProductDisplayPageAdapter(board.pictures.size,currentPage)
+        pageRecyclerView = view.findViewById(R.id.product_detail_page_recyclerview)
+        pageRecyclerView.adapter = pageAdapter
+        val linearLayoutManager =
+            LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
+        pageRecyclerView.layoutManager = linearLayoutManager
 
         // 상품 제목, 판매자 이름, 가격, 몇 분전 게시물인지 표시
         val titleTextView = view.findViewById<TextView>(R.id.product_detail_title)
