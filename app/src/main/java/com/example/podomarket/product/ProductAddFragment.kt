@@ -248,7 +248,7 @@ class ProductAddFragment : Fragment() {
         val content = view.findViewById<EditText>(R.id.product_sell_detail_edit_text).text
         val price = view.findViewById<EditText>(R.id.product_sell_price_edit_text).text
         val title = view.findViewById<EditText>(R.id.product_sell_title_edittext).text
-        return content.isNotEmpty() || price.isNotEmpty() || title.isNotEmpty()
+        return content.isNotEmpty() || price.isNotEmpty() || title.isNotEmpty() || picturesFileList.size > 0
     }
 
     private fun setRecyclerAdapter(view:View){

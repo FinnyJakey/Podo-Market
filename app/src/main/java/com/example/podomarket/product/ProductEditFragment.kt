@@ -332,7 +332,10 @@ class ProductEditFragment : Fragment() {
                 .toIntOrNull()
         val title =
             view.findViewById<EditText>(R.id.product_edit_title_edittext).text.toString()
-        return board.content != content || board.price.toDouble() != price?.toDouble() || board.title != title
+        return board.content != content
+                || board.price.toDouble() != price?.toDouble()
+                || board.title != title || picturesFileList.size>0
+                || !board.pictures.equals(picturesStringList)
     }
 
     private fun setThumbnailArray(view:View, board: BoardModel){
