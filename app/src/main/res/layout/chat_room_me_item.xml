@@ -27,6 +27,7 @@
             android:textColor="@color/text_01"/>
     </androidx.cardview.widget.CardView>
     <TextView
+        android:id="@+id/chat_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="@+id/chat_bubble"
