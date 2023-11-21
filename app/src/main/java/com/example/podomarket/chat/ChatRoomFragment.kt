@@ -18,6 +18,21 @@ import com.example.podomarket.chat.ExampleChat
 import com.example.podomarket.common.DraggableFragment
 
 class ChatRoomFragment : DraggableFragment() {
+    companion object {
+        private const val ARG_CHAT_UUID = "arg_chat_uuid"
+        private const val ARG_BOARD_UUID = "arg_board_uuid"
+        private const val ARG_RECEIVER_NAME  = "arg_receiver_name"
+        fun newInstance(chatUuid: String, boardUuid:String, recevierUuid:String): ChatRoomFragment {
+            val fragment = ChatRoomFragment()
+            val args = Bundle()
+            args.putString(ARG_CHAT_UUID, chatUuid)
+            args.putString(ARG_BOARD_UUID, boardUuid)
+            args.putString(ARG_RECEIVER_NAME, recevierUuid)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_chat_room, container, false)
         // 뒤로가기 버튼
