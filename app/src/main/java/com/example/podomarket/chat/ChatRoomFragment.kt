@@ -125,9 +125,9 @@ class ChatRoomFragment : DraggableFragment() {
             boardViewModel.getBoard(uuid) { board ->
                 productStatus.text = if(board.sold){ "판매완료" }else{ "판매중" }
                 productTitle.text = board.title
-                productPrice.text = board.price.toString()
+                productPrice.text = CommonUtil.priceToString(board.price)
                 Glide.with(view.context)
-                    .load(board.pictures)
+                    .load(board.pictures[0])
                     .into(productImage)
             }
         }

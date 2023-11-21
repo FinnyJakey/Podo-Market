@@ -5,7 +5,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.podomarket.R
 import com.example.podomarket.chat.ExampleChat
+import com.example.podomarket.common.CommonUtil
 import com.example.podomarket.model.ChatModel
+import java.time.LocalDateTime
 
 class ChatRoomBubbleRecyclerViewAdapter(private val dataList: List<ChatModel>, private val myUuid: String) : RecyclerView.Adapter<ChatRoomBubbleRecyclerViewAdapter.MyViewHolder>() {
     inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -24,7 +26,11 @@ class ChatRoomBubbleRecyclerViewAdapter(private val dataList: List<ChatModel>, p
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val item = dataList[position]
         holder.messageTextView.text = item.message
-        holder.chatTimeTextView.text = item.createdAt.toDate().time.toString()
+        holder.chatTimeTextView.text =
+            CommonUtil.timestampToString(
+                item.createdAt.toDate().hours,
+                item.createdAt.toDate().minutes
+            )
     }
 
     override fun getItemViewType(position: Int): Int {
