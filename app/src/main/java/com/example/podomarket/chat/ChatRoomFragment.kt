@@ -13,11 +13,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
 import com.example.podomarket.R
-import com.example.podomarket.chat.ExampleChat
-import com.example.podomarket.common.CommonUtil
 import com.example.podomarket.common.DraggableFragment
 import com.example.podomarket.model.ChatModel
 import com.example.podomarket.viewmodel.AuthViewModel
@@ -31,6 +28,7 @@ class ChatRoomFragment : DraggableFragment() {
     private lateinit var chatBubbleRecyclerView: RecyclerView
     private val currentUser = authViewModel.getCurrentUserUid()
     private lateinit var adapter: ChatRoomBubbleRecyclerViewAdapter
+
     companion object {
         private const val ARG_CHAT_UUID = "arg_chat_uuid"
         private const val ARG_BOARD_UUID = "arg_board_uuid"
@@ -61,6 +59,14 @@ class ChatRoomFragment : DraggableFragment() {
             )
             transaction.remove(this@ChatRoomFragment)
             transaction.commit()
+        }
+
+        chatViewModel.chatCollection.addSnapshotListener { snapshot, _ ->
+            for (dc in snapshot!!.documentChanges) {
+                chatViewModel.getAllChatsFromRoom(chatUuid!!) { chat ->
+                    displayChatInfo(view, chat, boardUuid!!, receiverName!!)
+                }
+            }
         }
 
         if(chatUuid == null || boardUuid == null || receiverName == null){
