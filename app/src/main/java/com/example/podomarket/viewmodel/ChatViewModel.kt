@@ -26,6 +26,7 @@ class ChatViewModel : ViewModel() {
                     chatCollection.document(chat_uuid)
                         .get()
                         .addOnSuccessListener { document ->
+                            val chatRoomUuid = document.id
                             val boardId = document.get("board_id") as String
                             val chats = document.get("chats") as List<HashMap<String, Any>>
                             val participants = document.get("participants") as List<String>
@@ -42,7 +43,7 @@ class ChatViewModel : ViewModel() {
                                 chatsList.add(ChatModel(createdAt, message, userId, userName))
                             }
 
-                            myChatRooms.add(ChatRoomModel(boardId, chatsList, participants, recentTime))
+                            myChatRooms.add(ChatRoomModel(chatRoomUuid, boardId, chatsList, participants, recentTime))
                         }
                         .await()
                 }
@@ -105,7 +106,7 @@ class ChatViewModel : ViewModel() {
                                 .update("chats", FieldValue.arrayUnion(chatDocument.id))
                                 .await()
 
-                            onCreateComplete(ChatRoomModel(boardId, emptyList<ChatModel>(), listOf(myUid, theOtherUid), Timestamp.now()))
+                            onCreateComplete(ChatRoomModel(chatDocument.id,boardId, emptyList<ChatModel>(), listOf(myUid, theOtherUid), Timestamp.now()))
                         }
                     }
 

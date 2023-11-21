@@ -3,6 +3,7 @@ package com.example.podomarket.model
 import com.google.firebase.Timestamp
 
 data class ChatRoomModel(
+    val chatRoomUuid: String,
     val boardUuid: String,
     val chats: List<ChatModel>,
     val participants: List<String>,
