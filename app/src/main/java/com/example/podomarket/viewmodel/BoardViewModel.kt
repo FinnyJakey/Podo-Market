@@ -22,6 +22,7 @@ class BoardViewModel : ViewModel() {
     private val authViewModel = AuthViewModel()
 
     private val boardsLiveData = MutableLiveData<List<BoardModel>>()
+    private val thumbnailLiveData = MutableLiveData<List<String>>()
 
     fun getBoardsLiveData(): LiveData<List<BoardModel>> {
         return boardsLiveData
@@ -121,7 +122,7 @@ class BoardViewModel : ViewModel() {
             }
     }
 
-    fun updateBoard(board: BoardModel, newPictures: List<File> = emptyList(), onUpdateComplete: (Boolean) -> Unit) {
+    fun updateBoard(board: BoardModel, newPictures: List<File>, onUpdateComplete: (Boolean) -> Unit) {
         CoroutineScope(Dispatchers.Main).launch {
             val newPicturesList = mutableListOf<String>()
 
@@ -186,7 +187,7 @@ class BoardViewModel : ViewModel() {
                 val boardUuid = document.id
                 val content = document.get("content").toString()
                 val createdAt = document.get("created_at") as Timestamp
-                val pictures = document.get("pictures") as List<String>
+                val pictures = document.get("pictures") as MutableList<String>
                 val price = document.get("price") as Number
                 val sold = document.get("sold") as Boolean
                 val title = document.get("title").toString()
