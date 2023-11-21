@@ -5,22 +5,14 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.podomarket.R
 import com.example.podomarket.chat.ExampleChat
+import com.example.podomarket.model.ChatModel
 
-class ChatRoomRecyclerViewAdapter(private val dataList: List<ExampleChat>, private val itemClickListener: OnItemClickListener?) : RecyclerView.Adapter<ChatRoomRecyclerViewAdapter.MyViewHolder>() {
+class ChatRoomBubbleRecyclerViewAdapter(private val dataList: List<ChatModel>, private val myUuid: String) : RecyclerView.Adapter<ChatRoomBubbleRecyclerViewAdapter.MyViewHolder>() {
     inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val textView: TextView = itemView.findViewById(R.id.message)
-
-        init {
-            itemView.setOnClickListener {
-                val position = adapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    itemClickListener?.onItemClick(position)
-                }
-            }
-        }
+        val messageTextView: TextView = itemView.findViewById(R.id.message)
+        val chatTimeTextView: TextView = itemView.findViewById(R.id.chat_time)
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val item = dataList[viewType]
         val layoutResId = if (viewType == 0) {
             R.layout.chat_room_me_item
         } else {
@@ -31,12 +23,13 @@ class ChatRoomRecyclerViewAdapter(private val dataList: List<ExampleChat>, priva
     }
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val item = dataList[position]
-        holder.textView.text = item.message
+        holder.messageTextView.text = item.message
+        holder.chatTimeTextView.text = item.createdAt.toDate().time.toString()
     }
 
     override fun getItemViewType(position: Int): Int {
         val item = dataList[position]
-        return if (item.sender == "me") {
+        return if (item.userId == myUuid) {
             0
         } else {
             1
@@ -44,8 +37,5 @@ class ChatRoomRecyclerViewAdapter(private val dataList: List<ExampleChat>, priva
     }
     override fun getItemCount(): Int {
         return dataList.size
-    }
-    interface OnItemClickListener {
-        fun onItemClick(position: Int)
     }
 }

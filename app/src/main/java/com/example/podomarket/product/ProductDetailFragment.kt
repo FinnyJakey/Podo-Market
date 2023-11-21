@@ -1,5 +1,6 @@
 package com.example.podomarket.product
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,19 +12,20 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
-import com.bumptech.glide.Glide
 import com.example.podomarket.R
 import com.example.podomarket.common.CommonUtil
 import com.example.podomarket.common.DraggableFragment
 import com.example.podomarket.model.BoardModel
 import com.example.podomarket.viewmodel.AuthViewModel
 import com.example.podomarket.viewmodel.BoardViewModel
+import com.example.podomarket.viewmodel.ChatViewModel
 import com.google.firebase.Timestamp
 import kotlin.properties.Delegates
 
 // 제품 상세 페이지
 class ProductDetailFragment : DraggableFragment() {
     private val boardViewModel = BoardViewModel()
+    private val chatViewModel = ChatViewModel()
     private val authViewModel = AuthViewModel()
     private var totalPage by Delegates.notNull<Int>()
     private var currentPage by Delegates.notNull<Int>()
@@ -45,13 +47,12 @@ class ProductDetailFragment : DraggableFragment() {
         val boardUuid = arguments?.getString(ARG_BOARD_UUID)
         val currentUser = authViewModel.getCurrentUserUid()
 
-        // 채팅 버튼
-        moveChatFragmentButton(view)
-
         // 더보기 버튼, 클릭시 나오는 메뉴 구현
-       val moreButton = view.findViewById<ImageView>(R.id.more_button)
+        val moreButton = view.findViewById<ImageView>(R.id.more_button)
         var overlayView = view.findViewById<View>(R.id.overlay_view)
-        val productMenu = view.findViewById<CardView>(R.id.product_menu)
+        var productMenu = view.findViewById<CardView>(R.id.product_menu)
+        var productMenuEdit = view.findViewById<TextView>(R.id.product_menu_edit)
+        var productMenuDelete = view.findViewById<TextView>(R.id.product_menu_delete)
 
         // 더보기 버튼 클릭 -> 메뉴 버튼, 바깥 레이아웃을 출력
         moreButton.setOnClickListener {
@@ -67,8 +68,8 @@ class ProductDetailFragment : DraggableFragment() {
             overlayView.visibility = View.GONE
         }
 
-        // 메뉴 버튼 클릭 시 -> 메뉴 버튼과 바깥 레이아웃 사라지고, 게시글 수정 프래그먼트로 이동
-        productMenu.setOnClickListener{
+        // 게시물 수정 클릭 시 -> 메뉴 버튼과 바깥 레이아웃 사라지고, 게시글 수정 프래그먼트로 이동
+        productMenuEdit.setOnClickListener{
             // 게시물 올린 유저uuid와 현재 uuid가 동일할시 수정 가능
             boardUuid?.let { uuid ->
                 boardViewModel.getBoard(uuid) { board ->
@@ -84,6 +85,40 @@ class ProductDetailFragment : DraggableFragment() {
             }
         }
 
+        // 게시물 삭제 클릭 시 -> 메뉴 버튼, 레이아웃 사라지고, 게시물 리스트 프레그먼트로 이동
+        productMenuDelete.setOnClickListener{
+            val alertDialog = AlertDialog.Builder(this.context)
+            alertDialog.setTitle("확인 메세지")
+            alertDialog.setMessage("삭제 누를시 게시물이 삭제됩니다.")
+            alertDialog.setPositiveButton("삭제") { dialog, which ->
+                boardUuid?.let { uuid ->
+                    boardViewModel.deleteBoard(uuid) { isSuccess ->
+                        if (isSuccess) {
+                            val transaction = parentFragmentManager.beginTransaction()
+
+                            productMenu.visibility = View.GONE
+                            overlayView.visibility = View.GONE
+
+                            transaction.setCustomAnimations(
+                                0,
+                                R.anim.exit_to_right
+                            )
+                            transaction.remove(this@ProductDetailFragment)
+                            transaction.commit()
+                        } else {
+                            println("삭제 실패");
+
+                        }
+                    }
+                }
+            }
+            alertDialog.setNegativeButton("취소") { dialog, which ->
+                productMenu.visibility = View.GONE
+                overlayView.visibility = View.GONE
+            }
+            alertDialog.show()
+        }
+
         // 뒤로가기 버튼 구현
         moveBackFragment(view)
 
@@ -92,25 +127,39 @@ class ProductDetailFragment : DraggableFragment() {
             boardViewModel.getBoard(uuid) { board ->
                 // 상품 정보 UI에 표시
                 displayBoardInfo(view, board)
+
+                if(currentUser == null){
+                    Toast.makeText(requireContext(), "유저 아이디가 존재하지 않습니다.", Toast.LENGTH_SHORT).show()
+                    return@getBoard
+                }
+
                 // 현재 로그인한 유저가 쓴 글이 아닐 경우
                 if(currentUser != board.userId){
                     // 더보기 버튼 사라짐
                     moreButton.visibility = View.GONE
                 }
+                // 채팅 버튼
+                moveChatFragmentButton(view,boardUuid,currentUser,board.userId)
             }
         }
         return view
     }
 
-    private fun moveChatFragmentButton(view:View){
+    private fun moveChatFragmentButton(view:View, boardUuid: String, myUid : String, theOtherUid: String){
         val chatButton = view.findViewById<CardView>(R.id.chat_button)
         // 채팅 버튼 클릭시 -> 채팅방 화면 프래그먼트 실행 및 이동
         chatButton.setOnClickListener {
-            val chatRoomFragment = ChatRoomFragment()
-            val transaction = parentFragmentManager.beginTransaction()
-            transaction.add(R.id.fragment_container, chatRoomFragment)
-            transaction.addToBackStack(null)
-            transaction.commit()
+            chatViewModel.createChatRoom(boardUuid, myUid, theOtherUid){
+                chatRoom->
+                authViewModel.getUserName(theOtherUid){
+                    userName ->
+                    val chatRoomFragment = ChatRoomFragment.newInstance(chatRoom.chatRoomUuid, chatRoom.boardUuid,userName)
+                    val transaction = parentFragmentManager.beginTransaction()
+                    transaction.add(R.id.fragment_container, chatRoomFragment)
+                    transaction.addToBackStack(null)
+                    transaction.commit()
+                }
+            }
         }
     }
 
