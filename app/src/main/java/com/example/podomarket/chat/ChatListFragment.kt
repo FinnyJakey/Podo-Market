@@ -27,6 +27,51 @@ class ChatListFragment : Fragment() {
             fragmentManager.popBackStack()
         }
 
+        chatViewModel.chatCollection.addSnapshotListener { snapshot, _ ->
+            for (dc in snapshot!!.documentChanges) {
+                chatViewModel.getAllMyChatRooms { dataList ->
+                    val itemClickListener =
+                        object : ChatListRecyclerViewAdapter.OnItemClickListener {
+                            override fun onItemClick(position: Int) {
+                                val chatRoom: ChatRoomModel = dataList[position]
+                                //상대방유저
+                                var sendUserId = authviewModel.getCurrentUserUid()
+                                var receiverUserId = chatRoom.participants[0]
+                                if (sendUserId == chatRoom.participants[0]) receiverUserId =
+                                    chatRoom.participants[1]
+
+                                authviewModel.getUserName(receiverUserId) { name ->
+                                    if (name != null) {
+                                        // 채팅방 화면으로 이동, 정보저장
+                                        val chatRoomFragment = ChatRoomFragment.newInstance(
+                                            chatRoom.chatRoomUuid,
+                                            chatRoom.boardUuid,
+                                            name
+                                        )
+                                        val transaction = parentFragmentManager.beginTransaction()
+                                        transaction.setCustomAnimations(
+                                            R.anim.enter_from_right,
+                                            0,
+                                        )
+                                        transaction.add(R.id.fragment_container, chatRoomFragment)
+                                        transaction.addToBackStack(null)
+                                        transaction.commit()
+                                    } else {
+                                        println("가져오기 실패")
+                                    }
+                                }
+                            }
+                        }
+                    if (dataList.size != 0) {
+                        val recyclerView = view.findViewById<RecyclerView>(R.id.chat_recyclerview)
+                        val adapter = ChatListRecyclerViewAdapter(dataList, itemClickListener)
+                        recyclerView.adapter = adapter
+                        recyclerView.layoutManager = LinearLayoutManager(this.context)
+                    }
+                }
+            }
+        }
+
         //출력용 채팅 Roooms 데이터
         chatViewModel.getAllMyChatRooms { dataList ->
             // 아이템 클릭 시
