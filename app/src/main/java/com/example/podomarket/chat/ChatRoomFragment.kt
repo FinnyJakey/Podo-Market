@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.podomarket.R
+import com.example.podomarket.common.CommonUtil
 import com.example.podomarket.common.DraggableFragment
 import com.example.podomarket.model.ChatModel
 import com.example.podomarket.viewmodel.AuthViewModel
@@ -107,6 +108,7 @@ class ChatRoomFragment : DraggableFragment() {
                             adapter.notifyDataSetChanged()
                         }
                     }
+                    messageEditText.text.clear()
                 }
             }
         }
