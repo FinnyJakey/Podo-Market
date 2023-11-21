@@ -51,7 +51,9 @@ class ProductDetailFragment : DraggableFragment() {
         // 더보기 버튼, 클릭시 나오는 메뉴 구현
        val moreButton = view.findViewById<ImageView>(R.id.more_button)
         var overlayView = view.findViewById<View>(R.id.overlay_view)
-        val productMenu = view.findViewById<CardView>(R.id.product_menu)
+        var productMenu = view.findViewById<CardView>(R.id.product_menu)
+        var productMenuEdit = view.findViewById<TextView>(R.id.product_menu_edit)
+        var productMenuDelete = view.findViewById<TextView>(R.id.product_menu_delete)
 
         // 더보기 버튼 클릭 -> 메뉴 버튼, 바깥 레이아웃을 출력
         moreButton.setOnClickListener {
@@ -67,8 +69,8 @@ class ProductDetailFragment : DraggableFragment() {
             overlayView.visibility = View.GONE
         }
 
-        // 메뉴 버튼 클릭 시 -> 메뉴 버튼과 바깥 레이아웃 사라지고, 게시글 수정 프래그먼트로 이동
-        productMenu.setOnClickListener{
+        // 게시물 수정 클릭 시 -> 메뉴 버튼과 바깥 레이아웃 사라지고, 게시글 수정 프래그먼트로 이동
+        productMenuEdit.setOnClickListener{
             // 게시물 올린 유저uuid와 현재 uuid가 동일할시 수정 가능
             boardUuid?.let { uuid ->
                 boardViewModel.getBoard(uuid) { board ->
@@ -80,6 +82,31 @@ class ProductDetailFragment : DraggableFragment() {
                     transaction.commit()
                     productMenu.visibility = View.GONE
                     overlayView.visibility = View.GONE
+                }
+            }
+        }
+
+        // 게시물 삭제 클릭 시 -> 메뉴 버튼, 레이아웃 사라지고, 게시물 리스트 프레그먼트로 이동
+        productMenuDelete.setOnClickListener{
+            // 게시물 올린 유저uuid와 현재 uuid가 동일할시 수정 가능
+            boardUuid?.let { uuid ->
+                boardViewModel.deleteBoard(uuid) { isSuccess->
+                    if(isSuccess){
+                        val transaction = parentFragmentManager.beginTransaction()
+
+                        productMenu.visibility = View.GONE
+                        overlayView.visibility = View.GONE
+
+                        transaction.setCustomAnimations(
+                            0,
+                            R.anim.exit_to_right
+                        )
+                        transaction.remove(this@ProductDetailFragment)
+                        transaction.commit()
+                    }
+                    else{
+                        println("삭제 실패");
+                    }
                 }
             }
         }
