@@ -50,7 +50,7 @@ class ProductDetailFragment : DraggableFragment() {
         moveChatFragmentButton(view)
 
         // 더보기 버튼, 클릭시 나오는 메뉴 구현
-       val moreButton = view.findViewById<ImageView>(R.id.more_button)
+        val moreButton = view.findViewById<ImageView>(R.id.more_button)
         var overlayView = view.findViewById<View>(R.id.overlay_view)
         var productMenu = view.findViewById<CardView>(R.id.product_menu)
         var productMenuEdit = view.findViewById<TextView>(R.id.product_menu_edit)
