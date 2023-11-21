@@ -1,5 +1,6 @@
 package com.example.podomarket.product
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -88,27 +89,36 @@ class ProductDetailFragment : DraggableFragment() {
 
         // 게시물 삭제 클릭 시 -> 메뉴 버튼, 레이아웃 사라지고, 게시물 리스트 프레그먼트로 이동
         productMenuDelete.setOnClickListener{
-            // 게시물 올린 유저uuid와 현재 uuid가 동일할시 수정 가능
-            boardUuid?.let { uuid ->
-                boardViewModel.deleteBoard(uuid) { isSuccess->
-                    if(isSuccess){
-                        val transaction = parentFragmentManager.beginTransaction()
+            val alertDialog = AlertDialog.Builder(this.context)
+            alertDialog.setTitle("확인 메세지")
+            alertDialog.setMessage("삭제 누를시 게시물이 삭제됩니다.")
+            alertDialog.setPositiveButton("삭제") { dialog, which ->
+                boardUuid?.let { uuid ->
+                    boardViewModel.deleteBoard(uuid) { isSuccess ->
+                        if (isSuccess) {
+                            val transaction = parentFragmentManager.beginTransaction()
 
-                        productMenu.visibility = View.GONE
-                        overlayView.visibility = View.GONE
+                            productMenu.visibility = View.GONE
+                            overlayView.visibility = View.GONE
 
-                        transaction.setCustomAnimations(
-                            0,
-                            R.anim.exit_to_right
-                        )
-                        transaction.remove(this@ProductDetailFragment)
-                        transaction.commit()
-                    }
-                    else{
-                        println("삭제 실패");
+                            transaction.setCustomAnimations(
+                                0,
+                                R.anim.exit_to_right
+                            )
+                            transaction.remove(this@ProductDetailFragment)
+                            transaction.commit()
+                        } else {
+                            println("삭제 실패");
+
+                        }
                     }
                 }
             }
+            alertDialog.setNegativeButton("취소") { dialog, which ->
+                productMenu.visibility = View.GONE
+                overlayView.visibility = View.GONE
+            }
+            alertDialog.show()
         }
 
         // 뒤로가기 버튼 구현
