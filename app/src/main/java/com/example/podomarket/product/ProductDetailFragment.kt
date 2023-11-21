@@ -53,6 +53,7 @@ class ProductDetailFragment : DraggableFragment() {
         var productMenu = view.findViewById<CardView>(R.id.product_menu)
         var productMenuEdit = view.findViewById<TextView>(R.id.product_menu_edit)
         var productMenuDelete = view.findViewById<TextView>(R.id.product_menu_delete)
+        val chatButton = view.findViewById<TextView>(R.id.chat_start_Text)
 
         // 더보기 버튼 클릭 -> 메뉴 버튼, 바깥 레이아웃을 출력
         moreButton.setOnClickListener {
@@ -137,6 +138,7 @@ class ProductDetailFragment : DraggableFragment() {
                 if(currentUser != board.userId){
                     // 더보기 버튼 사라짐
                     moreButton.visibility = View.GONE
+                    chatButton.visibility = View.VISIBLE
                 }
                 // 채팅 버튼
                 moveChatFragmentButton(view,boardUuid,currentUser,board.userId)
@@ -146,7 +148,7 @@ class ProductDetailFragment : DraggableFragment() {
     }
 
     private fun moveChatFragmentButton(view:View, boardUuid: String, myUid : String, theOtherUid: String){
-        val chatButton = view.findViewById<CardView>(R.id.chat_button)
+        val chatButton = view.findViewById<TextView>(R.id.chat_start_Text)
         // 채팅 버튼 클릭시 -> 채팅방 화면 프래그먼트 실행 및 이동
         chatButton.setOnClickListener {
             chatViewModel.createChatRoom(boardUuid, myUid, theOtherUid){
