@@ -240,6 +240,7 @@
         android:id="@+id/product_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
         android:layout_marginRight="35dp"
         android:visibility="gone"
         app:cardCornerRadius="2dp"
