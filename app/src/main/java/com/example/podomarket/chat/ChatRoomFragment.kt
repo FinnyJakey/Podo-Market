@@ -94,7 +94,7 @@ class ChatRoomFragment : DraggableFragment() {
         })
         sendButton.setOnClickListener {
             chatViewModel.sendChat(chatUuid,messageEditText.text.toString()){
-                isSuccess->
+                    isSuccess->
                 if(isSuccess){
                     chatUuid.let { uuid ->
                         chatViewModel.getAllChatsFromRoom(uuid) { chat ->
