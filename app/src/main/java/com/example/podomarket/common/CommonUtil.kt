@@ -26,5 +26,19 @@ class CommonUtil {
             windowManager.defaultDisplay.getMetrics(displayMetrics)
             return displayMetrics.widthPixels
         }
+
+        fun timestampToString(hour:Int, min: Int): String {
+            val hourString = if(hour<10) {
+                "0$hour"
+            }else{
+                hour.toString()
+            }
+            val minString = if(min<10) {
+                "0$min"
+            }else{
+                min.toString()
+            }
+            return "$hourString:$minString"
+        }
     }
 }
