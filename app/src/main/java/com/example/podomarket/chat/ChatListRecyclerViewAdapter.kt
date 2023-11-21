@@ -38,7 +38,8 @@ class ChatListRecyclerViewAdapter(private val dataList: List<ChatRoomModel>, pri
                 //대입
                 holder.userNameText.text = name
                 holder.messageTimeText.text = calculateTimeAgo(chatRoom.recentTime)
-                holder.messageText.text = chatRoom.chats[chatRoom.chats.size - 1].message
+                if(chatRoom.chats.isEmpty())  holder.messageText.text = " "
+                else holder.messageText.text = chatRoom.chats[chatRoom.chats.size - 1].message
             } else {
                 println("가져오기 실패")
             }

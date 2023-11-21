@@ -49,6 +49,10 @@ class ChatRoomFragment : DraggableFragment() {
         val view = inflater.inflate(R.layout.fragment_chat_room, container, false)
         // 뒤로가기 버튼
         val backButton = view.findViewById<ImageView>(R.id.back_button)
+        val chatUuid = requireArguments().getString(ChatRoomFragment.ARG_CHAT_UUID)
+        val boardUuid = requireArguments().getString(ChatRoomFragment.ARG_BOARD_UUID)
+        val receiverName = requireArguments().getString(ChatRoomFragment.ARG_RECEIVER_NAME)
+
         backButton.setOnClickListener {
             val transaction = parentFragmentManager.beginTransaction()
             transaction.setCustomAnimations(
@@ -90,7 +94,7 @@ class ChatRoomFragment : DraggableFragment() {
         })
         sendButton.setOnClickListener {
             chatViewModel.sendChat(chatUuid,messageEditText.text.toString()){
-                isSuccess->
+                    isSuccess->
                 if(isSuccess){
                     chatUuid.let { uuid ->
                         chatViewModel.getAllChatsFromRoom(uuid) { chat ->
@@ -127,4 +131,5 @@ class ChatRoomFragment : DraggableFragment() {
         chatBubbleRecyclerView.adapter = adapter
         chatBubbleRecyclerView.layoutManager = LinearLayoutManager(view.context)
     }
+
 }

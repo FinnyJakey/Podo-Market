@@ -56,11 +56,12 @@ class ChatListFragment : Fragment() {
                     }
                 }
             }
-            val recyclerView = view.findViewById<RecyclerView>(R.id.chat_recyclerview)
-            val adapter = ChatListRecyclerViewAdapter(dataList, itemClickListener)
-            recyclerView.adapter = adapter
-            recyclerView.layoutManager = LinearLayoutManager(this.context)
-
+            if(dataList.size != 0){
+                val recyclerView = view.findViewById<RecyclerView>(R.id.chat_recyclerview)
+                val adapter = ChatListRecyclerViewAdapter(dataList, itemClickListener)
+                recyclerView.adapter = adapter
+                recyclerView.layoutManager = LinearLayoutManager(this.context)
+            }
         }
         return view
     }
