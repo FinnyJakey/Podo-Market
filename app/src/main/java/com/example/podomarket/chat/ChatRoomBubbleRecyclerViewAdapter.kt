@@ -9,7 +9,7 @@ import com.example.podomarket.common.CommonUtil
 import com.example.podomarket.model.ChatModel
 import java.time.LocalDateTime
 
-class ChatRoomBubbleRecyclerViewAdapter(private val dataList: List<ChatModel>, private val myUuid: String) : RecyclerView.Adapter<ChatRoomBubbleRecyclerViewAdapter.MyViewHolder>() {
+class ChatRoomBubbleRecyclerViewAdapter( private val dataList: List<ChatModel>, private val myUuid: String) : RecyclerView.Adapter<ChatRoomBubbleRecyclerViewAdapter.MyViewHolder>() {
     inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val messageTextView: TextView = itemView.findViewById(R.id.message)
         val chatTimeTextView: TextView = itemView.findViewById(R.id.chat_time)
@@ -31,6 +31,7 @@ class ChatRoomBubbleRecyclerViewAdapter(private val dataList: List<ChatModel>, p
                 item.createdAt.toDate().hours,
                 item.createdAt.toDate().minutes
             )
+
     }
 
     override fun getItemViewType(position: Int): Int {
