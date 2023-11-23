@@ -39,7 +39,7 @@
                 android:id="@+id/user_name"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="유저 아이디"
+                tools:text="유저 아이디"
                 android:textColor="@color/text_01"
                 android:textSize="20dp"
                 android:textStyle="bold" />
@@ -74,7 +74,7 @@
                 android:id="@+id/product_image"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/example_img_01"/>
+                tools:src="@drawable/example_img_01"/>
         </androidx.cardview.widget.CardView>
         <TextView
             android:id="@+id/chat_product_status"
@@ -87,7 +87,7 @@
             app:layout_constraintStart_toEndOf="@+id/chat_product_image"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="12dp"
-            android:text="판매중"/>
+            tools:text="판매중"/>
         <TextView
             android:id="@+id/product_price"
             android:layout_width="wrap_content"
@@ -98,7 +98,7 @@
             app:layout_constraintStart_toEndOf="@+id/chat_product_image"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="14dp"
-            android:text="2,000원"/>
+            tools:text="2,000원"/>
         <TextView
             android:id="@+id/chat_product_title"
             android:layout_width="wrap_content"
@@ -109,7 +109,7 @@
             app:layout_constraintStart_toEndOf="@+id/chat_product_status"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="11.5dp"
-            android:text="폴로 모자 판매합니다."/>
+            tools:text="폴로 모자 판매합니다."/>
     </androidx.constraintlayout.widget.ConstraintLayout>
     <View
         android:id="@+id/info_hr"
