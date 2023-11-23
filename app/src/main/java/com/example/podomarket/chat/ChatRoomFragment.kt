@@ -137,7 +137,11 @@ class ChatRoomFragment : DraggableFragment() {
         adapter = ChatRoomBubbleRecyclerViewAdapter(chat,currentUser)
         chatBubbleRecyclerView = view.findViewById(R.id.chat_room_recyclerview)
         chatBubbleRecyclerView.adapter = adapter
+        chatBubbleRecyclerView.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+            chatBubbleRecyclerView.scrollToPosition(adapter.itemCount - 1)
+        }
         chatBubbleRecyclerView.layoutManager = LinearLayoutManager(view.context)
+        chatBubbleRecyclerView.scrollToPosition(adapter.itemCount - 1)
     }
 
 }

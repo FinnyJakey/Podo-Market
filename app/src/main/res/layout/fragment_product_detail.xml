@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/frame_layout"
+<androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/frame_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
+    xmlns:tool="http://schemas.android.com/tools">
     <LinearLayout
         android:id="@+id/draggable_layout"
         android:layout_width="match_parent"
@@ -92,18 +91,8 @@
                         app:layout_constraintTop_toTopOf="@id/seller_profile_image"
                         android:textColor="@color/text_01"
                         android:layout_marginLeft="8dp"
-                        android:text="유저 아이디"
+                        tool:text="유저 아이디"
                         android:textSize="18dp"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintStart_toEndOf="@id/seller_profile_image"
-                        app:layout_constraintTop_toBottomOf="@+id/seller_name_2"
-                        android:textColor="@color/text_02"
-                        android:layout_marginLeft="8dp"
-                        android:text="유저 아이디"
-                        android:textSize="14dp"/>
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
@@ -122,7 +111,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/text_01"
-                    android:text="폴로 모자"
+                    tool:text="폴로 모자"
                     android:textSize="18dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginLeft="18dp"
@@ -133,7 +122,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/text_03"
-                    android:text="20분 전"
+                    tool:text="20분 전"
                     android:textSize="12dp"
                     app:layout_constraintTop_toBottomOf="@+id/product_detail_title"
                     app:layout_constraintStart_toStartOf="@+id/product_detail_title"
@@ -146,7 +135,7 @@
                     android:layout_marginLeft="18dp"
                     android:layout_marginRight="18dp"
                     android:layout_marginTop="4dp"
-                    android:text="봄에 구매했고 잘 안써서 판매해요 \n9만원에 구매했습니다."
+                    tool:text="봄에 구매했고 잘 안써서 판매해요 \n9만원에 구매했습니다."
                     android:textColor="@color/text_01"
                     android:textSize="16dp"
                     app:layout_constraintStart_toStartOf="@+id/product_detail_title"
@@ -192,16 +181,14 @@
                             android:id="@+id/product_detail_price"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="37,000원"
+                            tool:text="37,000원"
                             android:textSize="16dp"
-
                             android:textColor="@color/text_01" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="가격 제안 불가"
                             android:textSize="14dp"
-
                             android:textColor="@color/text_03"
                             />
                     </LinearLayout>

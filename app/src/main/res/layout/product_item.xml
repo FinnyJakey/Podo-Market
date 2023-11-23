@@ -2,6 +2,7 @@
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools"
     android:id="@+id/product_represent_image"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -26,7 +27,7 @@
             android:id="@+id/product_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/example_img_01"
+            tool:src="@drawable/example_img_01"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.cardview.widget.CardView>
@@ -36,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="18dp"
-        android:text="폴로 모자"
+        tool:text="폴로 모자"
         android:textColor="@color/text_01"
         android:textSize="18dp"
         app:layout_constraintStart_toEndOf="@+id/product_image_cardview"
@@ -48,7 +49,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="18dp"
         android:layout_marginTop="4dp"
-        android:text="당근마켓"
+        tool:text="당근마켓"
         android:textColor="@color/text_03"
         android:textSize="14dp"
         app:layout_constraintStart_toEndOf="@+id/product_image_cardview"
@@ -60,7 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="18dp"
         android:layout_marginTop="4dp"
-        android:text="37,000원"
+        tool:text="37,000원"
         android:textColor="@color/text_01"
         android:textSize="18dp"
         android:textStyle="bold"
