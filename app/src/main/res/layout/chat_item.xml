@@ -31,10 +31,10 @@
         </androidx.cardview.widget.CardView>
 
         <TextView
-            android:id="@+id/username"
+            android:id="@+id/chat_list_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="유저 아이디"
+            android:text=" "
             android:textSize="18dp"
             android:textColor="@color/text_01"
             android:textStyle="bold"
@@ -43,29 +43,29 @@
             app:layout_constraintStart_toEndOf="@+id/user_image_cardview"/>
 
         <TextView
-            android:id="@+id/message_time"
+            android:id="@+id/chat_list_message_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1분 전"
+            android:text=" "
             android:textSize="16dp"
             android:textColor="@color/text_02"
             android:layout_marginLeft="8dp"
-            app:layout_constraintBottom_toBottomOf="@id/username"
-            app:layout_constraintStart_toEndOf="@+id/username"/>
+            app:layout_constraintBottom_toBottomOf="@id/chat_list_username"
+            app:layout_constraintStart_toEndOf="@+id/chat_list_username"/>
 
 
     <TextView
-        android:id="@+id/message_text"
+        android:id="@+id/chat_list_message_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="username님이 이모티콘을 보냈어요. 클릭하여 메세지를 확인하세요"
+        android:text=" "
         android:textColor="@color/text_01"
         android:textSize="18dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="25dp"
         android:maxLines="1"
         android:ellipsize="end"
-        app:layout_constraintTop_toBottomOf="@+id/username"
+        app:layout_constraintTop_toBottomOf="@+id/chat_list_username"
         app:layout_constraintStart_toEndOf="@+id/user_image_cardview"
         app:layout_constraintEnd_toEndOf="parent"
     />
