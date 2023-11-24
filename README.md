@@ -19,7 +19,8 @@
 <br/>
 
 ## 레이아웃 구조
-<img width="900" alt="image" src="https://github.com/FinnyJakey/Podo-Market/assets/56541313/e202a33e-d7ad-4d4e-928e-94eed4c228cc"> <br/>
+<img width="900" alt="image" src="https://github.com/FinnyJakey/Podo-Market/assets/56541313/39966fcd-9fca-4737-bb61-7f06764e2ca5"><br/>
+
 - 프래그먼트 안의 레이아웃 중 반복되는 형태의 경우 `RecyclerView` 사용
 
 <br/>
